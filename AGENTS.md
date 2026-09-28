@@ -24,3 +24,17 @@ After game changes, open the site in a browser and check a new game, preparation
 ## Commit & Pull Request Guidelines
 
 No established contributor commit convention exists yet. Use short imperative Conventional Commit subjects such as `fix: validate backup before restore`. PRs should explain player-visible behavior, list checks run, and include screenshots for UI changes. Both GitHub Actions workflows currently require manual dispatch. Note whether `sync.py` will overwrite the change on its next run; changes to generated `index.html` may need a corresponding sync transformation.
+
+## Agent skills
+
+### Issue tracker
+
+Use GitHub Issues for issues and specs. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the five default triage labels. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Use a single root context and root ADR directory. See `docs/agents/domain.md`.

@@ -1,26 +1,42 @@
-# Kế hoạch lưu và khôi phục tiến trình độc lập
+# Kế hoạch refactor lưu và khôi phục tiến trình
 
-Khảo sát ngày 28/09/2026. **Phương án đã chốt:** tiến trình lưu trong trình duyệt, người chơi tự xuất/nhập file hoặc mã dài. Mục tiêu: không còn gọi API sao lưu `tiemtranho-api.trongnhi110266.workers.dev`. Chưa thay đổi mã game.
+Khảo sát ngày 28/09/2026. Refactor bắt đầu một định dạng save mới, không đọc hay chuyển đổi tiến trình từ game cũ. Tiến trình nằm trên thiết bị người chơi; server chỉ host game. Người chơi có thể tự xuất/nhập file hoặc mã theo định dạng mới.
 
-## Hiện trạng
+## Phạm vi hiện tại
 
-- `index.html` lưu tiến trình chính ở `localStorage` (`tsShop2`) và xoay vòng ba bản dự phòng cuối ngày (`tsBak1`–`tsBak3`). Khi hết chỗ, bản dự phòng có thể bị xóa để giữ bản chính. Trò chơi gọi `navigator.storage.persist()` nhưng không kiểm tra yêu cầu có được chấp thuận.
-- Mã dài `TTN1...` và file `.txt` chứa toàn bộ bản lưu, đọc được khi không có mạng. Hàm băm `bakHash` phát hiện lỗi chép/sửa vô ý; nó không xác thực nguồn gốc và không mã hóa dữ liệu.
-- Mã 8 số tải bản lưu từ API của trang nguồn. `backupDlg()` hiện ghi `bakDay` trước khi biết yêu cầu gửi có thành công không. `applyRestore()` ghi đè bản lưu chính trước khi xác nhận dữ liệu đọc được.
-- Game giữ tối đa 2.500 đánh giá và 400 bản tổng kết trong tiến trình; chưa có số đo kích thước save thật ở các mốc chơi dài ngày.
+- Bản nền cũ dùng `tsShop2`, các khóa `tsBak*`, mã `TTN1` và API mã 8 số tại `tiemtranho-api.trongnhi110266.workers.dev`.
+- Bản `index.html` đang sửa đã đổi sang khóa `ttn*`, mã `TTN2` và bỏ luồng API mã 8 số. Đây là thay đổi chưa hoàn chỉnh: `SAVE_PLAN.md` trước đó vẫn yêu cầu tương thích dữ liệu cũ.
+- `sync.py` và `.github/workflows/sync.yml` vẫn tải/đẩy game từ nguồn upstream `trongnhi.trongnhi110266.workers.dev`. Đây là luồng đồng bộ mã nguồn, tách biệt với API lưu game.
+- Mã nguồn của hai Worker bên ngoài không nằm trong repo. Tắt API và retire luồng đồng bộ cần xử lý cả cấu hình/dịch vụ bên ngoài tương ứng.
+- Repo hiện triển khai game tĩnh qua GitHub Pages; không có backend lưu save. Bản refactor giữ server ở vai trò host game.
 
-Trình duyệt thường giới hạn `localStorage` khoảng 5 MiB cho mỗi origin; dữ liệu trình duyệt có thể bị người dùng xóa hoặc bị dọn theo chính sách lưu trữ. Chuyển sang IndexedDB đơn thuần sẽ không giúp khôi phục trên thiết bị khác. Nguồn: [MDN về quota và eviction](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria).
+`localStorage` có giới hạn theo origin và dữ liệu có thể bị xóa/dọn theo chính sách trình duyệt. Tham khảo [quota và eviction của MDN](https://developer.mozilla.org/en-US/docs/Web/API/Storage_API/Storage_quotas_and_eviction_criteria).
 
-## Phương án lưu game
+Các khóa cũ trong trình duyệt được để nguyên nhưng không đọc, chuyển đổi hay xóa. Dữ liệu đã gửi lên API cũ không bị xóa; API sẽ ngừng hoạt động độc lập với thay đổi trong repo. Game không cung cấp giai đoạn chuyển đổi hay tương thích ngược với dữ liệu cũ.
 
-Game tiếp tục lưu tiến trình tại máy. Khi cần đổi thiết bị hoặc giữ bản dự phòng, người chơi tạo file hoặc mã dài rồi tự chuyển bản đó sang thiết bị mới. Trình duyệt tạo và đọc bản xuất, không cần máy chủ lưu game hay mạng khi sao lưu/khôi phục. Website vẫn cần hosting để tải lần đầu và nhận cập nhật; bản PWA có đủ file đã cache có thể mở offline. Người chơi phải giữ file hoặc mã đã xuất, vì xóa dữ liệu trình duyệt cũng xóa save trên máy.
+## Hành vi save đã chốt
+
+- Lưu tiến trình trong trình duyệt bằng `localStorage`. Chỉ cân nhắc IndexedDB nếu đo kích thước ở các mốc chơi dài hoặc gặp lỗi quota thật.
+- Giữ ba bản tự lưu cuối ngày và một bản riêng chụp tiến trình hiện tại trước khôi phục. Bản trước khôi phục tồn tại tới lần khôi phục kế tiếp và không bị vòng xoay cuối ngày xóa.
+- Bản sao chứa tiến trình quán, không chứa cài đặt chủ game, giao diện/âm thanh, khách, đơn hoặc đồng hồ của ca đang chạy. Khôi phục mở ở màn hình chuẩn bị.
+- Người chơi vẫn có thể xuất và nhập file hoặc mã dài theo định dạng mới; định dạng này tiếp tục được hỗ trợ qua các bản game mới. Mã 8 số, `TTN1` và các khóa save của game cũ không được nhận.
+- Nếu không lưu được do quota, không xóa bản lưu chính hay bản trước khôi phục. Báo lỗi, cho chơi tiếp trong phiên hiện tại và cho xuất bản sao để người chơi giữ bên ngoài trình duyệt.
+- Kiểm tra, xác thực và dựng tiến trình nhập trước khi thay trạng thái đang chơi hoặc ghi save. Nhập sai/không hợp lệ phải để cả hai nguyên vẹn. Nếu không thể giữ bản trước khôi phục, yêu cầu người chơi xuất tiến trình hiện tại trước khi tiếp tục.
+- Chỉ cập nhật `bakDay` sau khi mã được chép thành công hoặc người chơi xác nhận đã giữ file. Việc bắt đầu tải file không chứng minh người chơi đã giữ nó.
+
+## Loại bỏ nguồn/API cũ
+
+1. Bỏ mọi lời gọi tới API lưu mã 8 số và đóng Worker `tiemtranho-api.trongnhi110266.workers.dev`; không phát hành bản chuyển tiếp. Không xóa dữ liệu đã lưu trên Worker.
+2. Bỏ đồng bộ mã nguồn upstream: retire `sync.py`, `.github/workflows/sync.yml` và các artifact deobfuscation chỉ được luồng đó dùng (`deobf.py`, `decrypted.js`, `test.txt`). Cập nhật `README.md`, `DEPLOYMENT_PLAN.md` và `AGENTS.md` để repo này là nguồn mã game chính, không còn chỉ dẫn chạy sync.
+3. Giữ hosting tĩnh và service worker cùng origin để tải/cached game. Việc phục vụ website không tạo API lưu tiến trình.
+4. Tăng `VERSION` trong `sw.js` khi tài nguyên đã cache thay đổi.
 
 ## Trình tự triển khai và tiêu chí chấp nhận
 
-1. Đo kích thước `tsShop2`, ba bản dự phòng và mã nén tại ngày đầu, một mốc chơi dài và gần giới hạn đánh giá. Nếu có lỗi quota thật, cân nhắc IndexedDB riêng; không chuyển sớm chỉ vì có API mới.
-2. Sửa `applyRestore()`/`loadFrom()` theo hướng kiểm tra và dựng trạng thái trước khi ghi; kiểm tra bản hợp lệ, thiếu trường, sai kiểu và bản bị sửa. Bản hiện có phải sống sót sau mọi lần nhập lỗi.
-3. Bỏ `CLOUD`, `cloudFetch`, `cloudSave`, `cloudLoad` và UI mã 8 số khỏi luồng sao lưu/khôi phục. Nút sao lưu hiển thị mã dài và tùy chọn chép/lưu file ngay; không chờ request mạng. Chỉ cập nhật `bakDay` khi chép mã thành công hoặc người chơi xác nhận đã giữ file; thao tác bắt đầu tải file không chứng minh file đã được giữ. Nếu không thể ghi `localStorage`, vẫn cho người chơi lấy bản xuất và nhắc họ giữ nó ngoài trình duyệt.
-4. Giữ `TTN1` và cách nhập file/mã dài để các bản đã xuất vẫn dùng được. Mã 8 số cũ không thể khôi phục sau khi bỏ API: trước khi cập nhật, người chỉ có mã 8 số cần khôi phục qua bản cũ rồi xuất file/mã dài. Hiển thị hướng dẫn chuyển đổi này cho người chơi trong giai đoạn cập nhật.
-5. Thử tạo/khôi phục file và mã dài khi offline, hết quota, mã lỗi, tắt tab giữa thao tác và khi đổi domain. Xác nhận không có request đến API cũ bằng DevTools Network; save cũ trên cùng origin vẫn tải được.
+1. Đo save mới ở ngày đầu, một mốc chơi dài và gần giới hạn 2.500 đánh giá/400 bản tổng kết. Dùng kết quả để xác định liệu quota `localStorage` gây lỗi thực tế hay không.
+2. Ghi/đọc định dạng mới và giữ định dạng đó khi nâng cấp các bản game sau. Không có nhánh đọc/migrate từ `tsShop2`, `tsOwner`, `tsBak*`, `tsTheme`, `tsAudio`, `tsVer`, `TTN1` hay mã 8 số.
+3. Thử lưu, sao lưu và khôi phục offline; nhập mã/file sai; khôi phục khi hết quota; đóng tab giữa thao tác; và khôi phục bản mới sau khi nâng cấp game. Lỗi nhập không đổi tiến trình đang chơi hay save đã lưu.
+4. Xác nhận ba bản cuối ngày và bản trước khôi phục được giữ theo chính sách đã chốt; lỗi ghi không âm thầm xóa chúng hoặc bản save chính.
+5. Xác nhận bản mới không gửi request tới API save cũ, còn `sync.py` và workflow upstream đã được retire. Xác nhận PWA vẫn mở được khi offline sau khi đã cache đủ tài nguyên.
 
-**Giới hạn đã chấp nhận:** không có đồng bộ tự động giữa thiết bị; khôi phục trên máy khác cần chuyển file hoặc mã dài bằng cách người chơi tự chọn. Không phát sinh chi phí hoặc tài khoản máy chủ dành riêng cho dữ liệu save.
+**Giới hạn đã chấp nhận:** không đồng bộ save giữa thiết bị. Khi bắt đầu refactor, người chơi bắt đầu save mới; dữ liệu cũ và mã cũ không khôi phục được trong game mới. Người chơi cần tự giữ bản xuất mới để chuyển thiết bị.

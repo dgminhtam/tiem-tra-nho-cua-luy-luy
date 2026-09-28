@@ -14,9 +14,9 @@
 <meta name="apple-mobile-web-app-title" content="Tiệm Trà Nhỏ">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
+@font-face{font-family:"Baloo 2";font-style:normal;font-weight:500 800;font-display:swap;src:url("s/baloo2/v23/wXKrE3kTposypRyd51fcANwr.woff2") format("woff2");unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:"Baloo 2";font-style:normal;font-weight:500 800;font-display:swap;src:url("s/baloo2/v23/wXKrE3kTposypRyd51jcAA.woff2") format("woff2")}
 :root{color-scheme:only light;
   --bg:#fdf3e4; --ink:#3a2317; --soft:#7a5a48; --panel:#fffaf2; --line:#ead7bd;
   --counter:#8a5a3b; --counter-top:#a8714c; --pink:#ef6f8e; --pink-d:#c24c69; --mint:#4fa883; --warn:#e2574c; --gold:#f0b43c;
@@ -677,8 +677,7 @@ const TGROUPS=[{g:'tc',n:'Trân châu',i:ico('pearlbowl')},{g:'thach',n:'Thạch
 const SLOW_G=['thach','foam','pm'];
 const slowN=o=>o.tops.filter(t=>ITEMS[t]&&SLOW_G.includes(ITEMS[t].g)).length;
 const DEF_SELL={L:7000};[...BASE_KEYS,...FLAV_KEYS,...TOP_KEYS].forEach(k=>DEF_SELL[k]=ITEMS[k].sell);
-const OLD_NAMES={khoaimon:'Khoai môn',dau:'Sữa dâu',dao:'Trà đào',tctrang:'Trân châu trắng',pudding:'Pudding',kemtrung:'Kem trứng',L:'Phụ thu size L'};
-const iname=k=>ITEMS[k]?ITEMS[k].n:(OLD_NAMES[k]||k);
+const iname=k=>ITEMS[k]?ITEMS[k].n:k;
 const low=n=>n.toLowerCase().replace('3q','3Q').replace('thái','Thái');
 const dname=o=>ITEMS[o.base].n+(o.flav&&ITEMS[o.flav]?' '+low(ITEMS[o.flav].n):'');
 const PIECE={thachtc:['#ffffff','#e34b4b','#f39a3a'],thachpm:['radial-gradient(circle,#fffaf0 0 34%,#8a5a3b 40%)']};
@@ -764,36 +763,10 @@ const N_LAST=['Anh','Trâm','Vy','Linh','Hân','Nhi','My','Thảo','Ngân','Tran
 const N_MID=['Minh','Ngọc','Thu','Gia','Bảo','Khánh','Hoàng','Thanh','Quỳnh','Tuấn','Hải','Phương','Mai','Đức','Kim','Nhật','Tường','Hồng','Diệu','Anh','Thiên','Xuân','Như','Cát'];
 const N_NICK=['Bé Na','Bơ','Mít','Sữa','Su Su','Bin','Tôm','Cún','Mèo Mun','Kem','Na Na','Gấu','Bống','Bi','Xoài','Chuối','Heo Hồng','Cà Rốt','Bắp','Ốc','Nấm','Mochi','Tiểu Muội','Khoai','Đậu'];
 function genName(){return uniqName(()=>Math.random()<.5?rnd(NM_HO)+' '+rnd(NM_NU):rnd(NM_HO)+' '+rnd(NM_NAM))}
-const SAVE='tsShop2', OWNER_SAVE='tsOwner';
+const SAVE='ttnShop1', OWNER_SAVE='ttnOwner1';
 /* ===== PHIÊN BẢN GAME: mỗi lần cập nhật, tăng số và thêm một mục lên ĐẦU danh sách ===== */
-const GAME_VERSION='3.11';
-const CHANGELOG=[
-  {v:'3.11',d:'24/09/2026',items:['Hương mua theo chai ở Nâng cấp > Hương: 200k một chai dùng cho 45 ly, hạn 7 ngày kể từ ngày mua. Mua bao nhiêu chai thì 45 ly nhân lên. Hết chai phải mua chai mới, chai quá hạn bị đổ bỏ. Kho không còn nấu hương theo phần','Đơn online Soppi: cần mua tablet (7 triệu, ở Trang bị) thì đơn mới đổ về. Quán đã mở online được tặng sẵn 1 tablet','Đơn online nhận thêm tối đa bằng số chỗ ở quầy: 3 khách, mở rộng quầy thì 4 (tổng 6 hoặc 8 khách). Đơn online khoảng 20% tổng khách. Tài xế chờ tối đa 1 phút 30 giây, có tài xế nam và nữ','Mỗi 30 ngày có 1 đơn lớn Soppi 5–10 ly vào ngày ngẫu nhiên','Nhân viên đơn online (thuê 2 triệu, lương 250k/ngày): chỉ làm đơn online, mỗi ly khoảng 1 giây','Vay ngân hàng tối đa 1 triệu, lãi 25%/năm','Máy dán nắp tự động dán nhanh hơn','Hướng dẫn thêm trang Đường và đá (Cài đặt > Hướng dẫn)','Khách ngôi sao: cứ 30 ngày có 1 idol Kpop hoặc diễn viên Thái, Trung ghé quán vào ngày ngẫu nhiên. Nói tiếng nước mình kèm [Tự động dịch], trả gấp 3 tiền và luôn để 5 sao','Mã sao lưu còn 8 số, mỗi quán một mã riêng không trùng ai. Sao lưu lại vẫn giữ nguyên mã. Khôi phục bằng 8 số cần có mạng, mã dài cũ vẫn dùng được','Tem thương hiệu hiện đủ tên quán. Chọn được kiểu chữ thẳng hàng, cong phía trên hoặc cong phía dưới']},
-  {v:'3.10',d:'24/09/2026',items:['Thêm Nhân viên phụ quầy 2 (thuê 750k, lương 150k/ngày): làm như nhân viên phụ quầy, thêm múc topping. Không thuê cùng lúc với nhân viên phụ quầy, thuê người này thì người kia tự nghỉ (gọi đi làm lại không tốn tiền)','Sửa lỗi trên iPhone: sau khi bật bàn phím (trả lời đánh giá, đặt tên quán…) rồi tắt, quầy pha bị thu nhỏ còn nửa màn hình và nút Mở cửa nhảy lên giữa màn hình. Game giờ tự nhận ra và trả về đủ màn hình','Sửa lỗi đánh giá đầy 2.500 thì như đứng yên: bộ nhớ lưu game bị đầy nên đánh giá và tiến trình mới có thể không được lưu. Bản lưu nay gọn hơn và tự dọn bản dự phòng cũ khi thiếu chỗ','Số đánh giá trên đầu màn hình giờ là tổng số đánh giá từ trước tới nay, vẫn tăng khi đã quá 2.500 (tab Đánh giá vẫn giữ 2.500 đánh giá mới nhất)']},
-  {v:'3.9',d:'23/09/2026',items:['Nhân viên phụ quầy: bạn lấy ly, bỏ topping và dán nắp (có máy dán nắp tự động thì máy tự dán). Nhân viên rót trà, cho hương, đường và đá. Bỏ topping được ngay trong lúc nhân viên đang pha']},
-  {v:'3.8',d:'23/09/2026',items:['Nhân viên pha chế làm nhanh như nhân viên phụ quầy, mỗi ly khoảng 3 giây. Đơn nhân viên đang làm không còn chặn khách mới, bạn luôn có khách để làm','Thông báo lúc bán hiện lâu hơn. Nhân viên làm sai thì báo rõ sai gì (chữ nền đỏ, hiện 5 giây)','Quầy pha chừa khoảng trống ở mép dưới, đỡ bị vuốt nhầm sang app khác trên iPhone','Game tự lưu 3 cuối ngày gần nhất, lấy lại trong Cài đặt > Khôi phục bản tự lưu','Máy chặn lưu tiến trình (ví dụ iPhone bật Chặn tất cả cookie) thì game báo ngay, kèm cách sửa','Mở game trên máy mới: màn hình chào có nút khôi phục bằng mã sao lưu. Cứ 7 ngày game nhắc tạo mã sao lưu một lần']},
-  {v:'3.7',d:'23/09/2026',items:['Tới 22:00 quán đóng cửa: không nhận khách mới, nhân viên phụ quầy nghỉ, bạn làm nốt cho khách đang trong quán rồi mới tổng kết. Đơn online ngưng nhận từ 21:30, đơn đang có vẫn phải làm nốt','Nhân viên pha chế nhận trọn đơn của một khách (có ký hiệu trên mặt khách) và làm hết các ly, bạn không cần đụng vào khách đó. Không còn bị trùng ly phải đổ bỏ. Ly nào hết món thì khách nhận các ly còn lại rồi về','Lương nhân viên pha chế 200k/ngày. Làm quá 22:00 thì trả tăng ca 40k/giờ, tính tròn mỗi 30 phút là 20k','Bỏ món khỏi menu trong Nâng cấp: khách không gọi món đó nữa, thêm lại lúc nào cũng được, không mất tiền. Hàng trong kho vẫn giữ, hết hạn thì tự đổ bỏ','Hạn dùng mới: hương ổi, mãng cầu, chanh 1 ngày, các hương khác 7 ngày; foam 2 ngày; phô mai tươi 3 ngày','Hương và topping: để giá trên 20k thì 80% khách không gọi món đó, trên 30k thì không khách nào gọi (xem cảnh báo trong Giá bán)','Lọc đánh giá theo số sao, hoặc chỉ xem đánh giá chưa trả lời','Chọn thời gian bán mỗi ngày 4, 5 hoặc 6 phút trong Cài đặt','Khách tăng đều theo số sao, không còn tăng vọt khi quán lên 4 sao. 10 ngày đầu khách tăng từ từ cho quen tay','Vừa chơi vừa nghe nhạc YouTube, Spotify được','Bộ nhận diện thương hiệu: hình logo sắc nét, không bị cắt, nằm giữa; ô chọn hình chỉ cuộn dọc; tem không còn bị méo, logo hiện rõ trên ly','Giao diện Đêm dịu sáng hơn, dễ nhìn quầy pha','Sửa lỗi tên quán ở trên cùng bị mờ trên iPhone','Bản cài vào máy: sửa lỗi mất hình khách và ly']},
-  {v:'3.6',d:'22/09/2026',items:['Sửa lỗi còn dư một vệt kệ nhỏ phía dưới khay đá viên, nước đường khi chưa mở hết foam/phô mai','Đơn từ 3 ly trở lên: chỉ chặn khách mới ghé khi đơn đó còn từ 3 ly chưa giao (trước đây tính cả những ly đã giao xong)','Khách đặt nhiều ly mà quán hết món giữa chừng: nếu đã được giao một số ly trước đó thì đánh giá nhẹ nhàng hơn, có nhắc tới việc đã uống được vài ly','Bộ nhận diện thương hiệu (Nâng cấp > Trang bị, 5 triệu): tự thiết kế tem in lên mọi ly — chọn màu nền, kiểu khung (tròn, bo góc, ruy băng), 1 trong 50 hình dễ thương và khẩu hiệu; tên quán tự hiện lên tem']},
-  {v:'3.5',d:'22/09/2026',items:['Sao lưu tiến trình bằng mã (Cài đặt > Sao lưu tiến trình), bị mất thì khôi phục lại từ mã hoặc file','Từ ngày 30, một khách mua được tối đa 5 ly, mỗi ly tới 4 topping','Ly trên 120k (trước là 100k) thì 60% khách bỏ đi','Món nào (trà, hương, topping) để giá trên 50k thì khách chê mắc, quán vắng 80% khách','Thạch 3Q đổi thành trân châu trắng cho đúng hình khay','Máy dán nắp tự động: khi chưa dán được thì báo rõ lý do (dư topping, dư đường, dư đá, sai siro, trà còn ít…)','Sửa lỗi bảng QUẦY TRÀ bị một vệt màu che, số trên khay đang khoá bị lộ ra','Trà để giá từ 40k là đắt, riêng matcha từ 50k','Giá nhập trà mới: matcha 6k, trà sữa 4,5k, trà sữa Thái 5k, trà olong 2,5k, hồng trà và lục trà 1,5k','Không còn đánh giá chê ly đổ, rỉ ra ngoài khi ly không bị tràn; ly không topping hoặc không đá thì khách không nhắc tới topping, đá','Đánh giá khớp với đơn thật: chỉ chê đắt khi quán đang để giá đắt, chỉ chê chờ lâu khi khách thật sự chờ lâu, chỉ chê sai món khi làm sai (đúng chỗ sai)','Quầy pha đổi màu theo màu giao diện chọn trong Cài đặt','Đơn từ 3 ly: khách khác chờ quán làm xong đơn đó mới ghé, không phải đứng chờ lâu','Ngày 1–5 có khách chỉ gọi trà, không topping']},
-  {v:'3.4',d:'22/09/2026',items:['Có ngày khách khó ở (dễ rớt sao, nhiều khách hãm), có ngày khách vui vẻ, không báo trước','Sửa lỗi quầy pha bị lệch lên trên, che mất hàng khách và hũ trà','Sửa lỗi trang bị đẩy lên sau khi gõ phím trên iPhone (mở từ màn hình chính)','Sửa lỗi game bị thu nhỏ khi Chrome Android bật chế độ trang web cho máy tính','Sửa lỗi quầy pha bị đen khi mở trong ứng dụng khác (Threads, Instagram…) ở chế độ tối']},
-  {v:'3.3',d:'22/09/2026',items:['Khách chờ lâu hơn (khoảng 1 phút), không giảm dần theo ngày','Đánh giá dễ thở hơn: pha đúng và nhanh gần như chắc 5 sao','Hướng dẫn chi tiết từng bước, có hình quầy pha','Chỉ dẫn từng bước cho khách đầu tiên của ngày có cách chơi mới (ngày 1, 6, 30, 60), chỉnh trong Cài đặt','Báo trước và hướng dẫn khi mở đường đá (ngày 6), ly 2 topping, đơn nhiều ly','Máy dán nắp tự động: mua rồi thì pha đúng món là tự dán nắp và giao','Sửa lỗi chữ bị cắt trong Kho','Thuê nhân viên (Nâng cấp > Nhân viên): phụ quầy tự rót trà, bỏ topping, đường và đá, pha chế tự làm cho khách chờ lâu nhất','Tổng kết có thêm lương nhân viên','Máy dán nắp tự động giá 3 triệu, theo giá thực tế','Có thuê nhân viên thì tiền tip là của nhân viên, quán không nhận','Sự kiện mỗi ngày: trời nóng, trời mưa, cuối tuần, học sinh tan học, food reviewer, món hot, nhà cung cấp giảm giá, ngày lễ','Sự kiện tặng tiền: lì xì, trả ví cho khách, giải quán đẹp, nhãn hàng tài trợ…','Nhạc nền và âm thanh: rót trà, múc topping, dán nắp, tiền vào két… (bật tắt trong Cài đặt)','Nhạc nền đổi theo mùa ngoài đời: thu, đông, xuân, hạ (chọn mùa trong Cài đặt)','Tắt nhạc, tắt âm thanh trong Cài đặt hoặc ngay trong bảng Tạm dừng','Nút × trên mặt khách bị hết món để mời khách về','Hơn 500 tên khách và hơn 500 câu đánh giá, không lặp lại','Chọn màu giao diện trong Cài đặt: 12 màu, có nâu cà phê như trước','Khách bước vào quán, khách tới theo giờ cao điểm, có lúc vắng để nghỉ tay','Thông báo lúc bán hiện ở dưới, không che đơn của khách','Giảm lag khi bán và khi rót trà','Vay ngân hàng khi két sắp cạn (dưới 200k), trả góp 10 ngày','Ly trên 100k (gồm hương, topping, size) thì 60% khách bỏ đi','Topping trong ly xếp dày như ly thật','Âm thanh thật: tiếng rót trà, chuông cửa, máy tính tiền, nhạc lên cấp','Nhạc nền mới cho 4 mùa và nhạc riêng cho ngày mưa','Ngày mưa có mưa rơi trên mái hiên quán','Thỉnh thoảng có khách hãm: khách hối, khách đổi ý, khách trả giá, khách khó tính, và hiếm hơn là khách bùng tiền','Nhân viên cho nghỉ thì gọi đi làm lại không tốn tiền thuê','Đơn nhiều ly tự chuyển sang ly kế tiếp']},
-  {v:'3.2',d:'21/09/2026',items:['Sửa lỗi ly biến mất khi đang rót trà','Sửa lỗi đồng hồ và hình trên màn hình nhấp nháy','Game chạy mượt hơn, bớt giật khi bán','Màn hình chuẩn bị không còn giật khi bấm thêm bớt món, đổi tab, nấu hàng hay mua món mới']},
-  {v:'3.1',d:'21/09/2026',items:['Sửa lỗi hình mèo ở màn hình chào','Hướng dẫn dùng hình khách chibi thay biểu tượng','Đặt tên quán: tiêu đề nằm trên ô nhập','Quầy pha chỉ hiện chai hương và thùng foam đã mua','Tạm dừng có thêm nút Đóng cửa hôm nay (cùng cỡ nút Chơi tiếp) để tổng kết sớm','Mèo ở màn hình chào ngọ nguậy đầu','Trả lời đánh giá của khách ngay trong mục Đánh giá']},
-  {v:'3.0',d:'21/09/2026',items:['Quầy pha mới vẽ tay kiểu chibi: hũ trà, khay topping, thùng foam, kệ siro','Nhấn giữ hũ trà để rót, thả tay đúng vạch xanh','Chạm khay, chai, thùng để bỏ vào ly, chạm máy dán nắp để giao','9 khách chibi, vui hay giận tùy ly pha','Giữ lại tất cả đánh giá từ ngày đầu, chia trang 15 đánh giá','Quán mở cửa từ 11:00 đến 22:00, một ngày bán khoảng 4 phút, đủ cho 20–30 đơn','Khay thạch trái cây dùng hình mới']},
-  {v:'2.7',d:'21/09/2026',items:['Pha xong ly tự đưa cho khách, không cần chạm vào khách','Ly pha xong mà sai món vẫn bị tính sai và đổ bỏ','Hương vị hiện bằng hình trái cây, foam hiện bằng hình đám mây','Foam cheese màu vàng']},
-  {v:'2.6',d:'21/09/2026',items:['Hình topping mới: trân châu sợi, thạch củ năng xanh lá, thạch trái cây 3 màu, thạch phô mai có nhân','Trà hiện bằng hình ly đúng màu','Đánh giá không còn lặp câu, kể cả khi nhiều khách bỏ về liên tiếp','Thêm nhận xét dài, chi tiết như review thật']},
-  {v:'2.5',d:'21/09/2026',items:['Đánh giá phong phú hơn, không lặp câu','Bàn pha tự bỏ qua bước Hương hoặc Topping khi khách không gọi','Tổng kết gọn hơn, hướng dẫn nói rõ hạn dùng']},
-  {v:'2.4',d:'21/09/2026',items:['Dưới 4 sao: mất 40% khách (ghi trong hướng dẫn)','Chưa nấu trà, topping hoặc chưa có ly thì không mở cửa được','Món hết hàng tự báo hết: khách mới đổi món hoặc bỏ về, không chấm 1 sao','Đánh giá đa dạng hơn: có thêm 2, 3, 4 sao']},
-  {v:'2.3',d:'21/09/2026',items:['Nút ⚙️ Cài đặt: hướng dẫn, có gì mới, chơi lại từ đầu','Thanh bước pha gọn hơn','Đưa sai món hoặc đổ ly thì ly bị bỏ, mất luôn nguyên liệu','Tổng kết có thêm số ly làm hỏng']},
-  {v:'2.2',d:'21/09/2026',items:['Menu ghi đủ tên món, chia 2 cột','Sửa lỗi game tự phóng to khi chạm nhanh 2 lần hoặc khi gõ số']},
-  {v:'2.1',d:'21/09/2026',items:['Màn hình chào khi mở game','Hướng dẫn bằng hình cho người mới, xem lại bất cứ lúc nào ở nút 📖 Hướng dẫn']},
-  {v:'2.0',d:'21/09/2026',items:['Thêm trà: hồng trà, lục trà, trà olong, trà sữa Thái','Thêm 12 hương vị pha cùng trà (hồng trà dâu, lục trà vải...)','Topping mới chia 4 nhóm: trân châu, thạch, foam, phô mai','Thạch dừa đổi tên thành thạch 3Q','Bàn pha theo từng bước: Trà + Size, Hương, Topping, Đường, Đá','Đơn có foam, thạch, phô mai được chờ lâu hơn','Kho, Nâng cấp, Giá bán có thêm tab Hương','Món cũ đã bỏ (khoai môn, trân châu trắng, pudding, kem trứng) được hoàn tiền mua']},
-  {v:'1.4',d:'21/09/2026',items:['Nâng cấp chia tab Trà, Topping, Trang bị, Online, vuốt trái phải để chuyển','Giá bán chia tab Trà, Topping, Tăng size','Mục mở đơn online chuyển vào Nâng cấp','Bỏ hiển thị cấp độ trên màn hình chính']},
-  {v:'1.3',d:'21/09/2026',items:['Chọn loại trà trước, size sau','Bàn pha dùng hình thay chữ','Đánh giá sinh động hơn, có hình ly khách đã uống','Tên khách đa dạng hơn','Bớt chữ ở kho, cấp độ, tạm dừng, cuối ngày','Sửa lỗi nội dung chạy lên thanh trạng thái điện thoại']},
-  {v:'1.2',d:'21/09/2026',items:['Hiện số phiên bản trong game','Thêm mục "Có gì mới" để xem lịch sử cập nhật']},
-  {v:'1.1',d:'21/09/2026',items:['Chia 4 cấp độ theo ngày: ngày 1–5 đơn giản, ngày 6 thêm đường đá, ngày 30 ly 2 topping, ngày 60 đơn 2–3 ly','Đơn nhiều ly có thời gian chờ dài hơn','Đơn online mở từ ngày 60, cần lời từ 15 triệu và giữ từ 4,0 sao','Tiền hiển thị theo đơn vị k (1k = 1.000đ)']},
-  {v:'1.0',d:'21/09/2026',items:['Bản đầu tiên cho bạn bè chơi thử','Tự nấu nguyên liệu, có hạn dùng và đổ bỏ','Tổng kết theo ngày, tuần, tháng kèm thuế hộ kinh doanh','Đặt tên quán, nút tạm dừng, giá riêng từng topping']}
-];
+const GAME_VERSION='1.0';
+const CHANGELOG=[{v:'1.0',d:'28/09/2026',items:['Bản game độc lập: tiến trình lưu trên thiết bị','Sao lưu và khôi phục bằng file hoặc mã dài, không cần mạng']}];
 /* ===== CẤU HÌNH CỦA CHỦ GAME (người chơi không chỉnh được) ===== */
 const DEFAULT_CONFIG={
   ownerPin:'2468',          // mã vào bảng chủ game
@@ -811,7 +784,6 @@ const DEFAULT_CONFIG={
   itemCap:50000,            // 1 món (trà, hương, topping) trên mức này: khách chê mắc, quán vắng 80%
   sizeCap:50000,            // phụ thu size L tối đa; để đúng mức này thì không ai chọn size L, quán vắng 80%
   sizeWarn:20000,
-  thiefMoney:100000000, thiefDay:30, thiefLeft:500000, // két trên mức này trước ngày này thì bị trộm, chừa lại thiefLeft           // phụ thu size L trên mức này là đắt, 90% khách không chọn size L
   loanLow:200000,           // két dưới mức này thì cho vay ngân hàng // lương mỗi ngày: nhân viên phụ quầy, nhân viên pha chế
   rent:40000,               // tiền mặt bằng mỗi ngày
   utilBase:20000,           // điện nước cơ bản mỗi ngày
@@ -824,15 +796,9 @@ const DEFAULT_CONFIG={
   life:{}                   // hạn dùng (ngày), 0 = không hết hạn
 };
 Object.keys(ITEMS).forEach(k=>{DEFAULT_CONFIG.cost[k]=ITEMS[k].cost;DEFAULT_CONFIG.life[k]=ITEMS[k].life});
+Object.assign(DEFAULT_CONFIG.cost,{tra:4500,matcha:6000,thai:5000,hong:1500,luc:1500,olong:2500});
 let CFG=JSON.parse(JSON.stringify(DEFAULT_CONFIG));
 try{const o=JSON.parse(localStorage.getItem(OWNER_SAVE));if(o){CFG={...CFG,...o,online:{...CFG.online,...o.online},levels:{...CFG.levels,...o.levels},cost:{...CFG.cost,...o.cost},life:{...CFG.life,...o.life}}}}catch(e){}
-if(!(CFG.cfgVer>=31)){CFG.dayMin=4}if(!(CFG.cfgVer>=33)){CFG.wage1=90000;CFG.wage2=100000;CFG.cfgVer=33;try{localStorage.setItem(OWNER_SAVE,JSON.stringify(CFG))}catch(e){}}
-if(!(CFG.cfgVer>=35)){CFG.priceCap=120000;CFG.itemCap=CFG.itemCap||50000;CFG.sizeCap=CFG.sizeCap||50000;}
-if(!(CFG.cfgVer>=37)){CFG.sizeWarn=CFG.sizeWarn||20000;CFG.thiefMoney=CFG.thiefMoney||100000000;CFG.thiefDay=CFG.thiefDay||30;CFG.thiefLeft=CFG.thiefLeft||500000}
-if(!(CFG.cfgVer>=36)){CFG.teaCap=CFG.teaCap||40000;CFG.teaCapMatcha=CFG.teaCapMatcha||50000;Object.assign(CFG.cost,{tra:4500,matcha:6000,thai:5000,hong:1500,luc:1500,olong:2500})}
-if(!(CFG.cfgVer>=37)){CFG.cfgVer=37;try{localStorage.setItem(OWNER_SAVE,JSON.stringify(CFG))}catch(e){}}
-const LIFE_OLD={f_vai:3,f_dao:3,f_dau:3,f_nho:3,f_xoai:1,f_tao:3,f_me:3,f_dua:1,f_choco:3,cheese:1,fmatcha:1,fsalt:1,fube:1,pmtuoi:1};
-if(!(CFG.cfgVer>=38)){Object.keys(LIFE_OLD).forEach(k=>CFG.life[k]=ITEMS[k].life);CFG.wage2=200000;CFG.cfgVer=38;try{localStorage.setItem(OWNER_SAVE,JSON.stringify(CFG))}catch(e){}}
 /* hương: mua theo chai, giá mỗi ly = giá chai / số ly, hạn dùng theo chai */
 FLAV_KEYS.forEach(k=>{CFG.cost[k]=Math.round(CFG.bottle/CFG.bottleN);CFG.life[k]=CFG.bottleLife});
 function saveCfg(){try{localStorage.setItem(OWNER_SAVE,JSON.stringify(CFG))}catch(e){}}
@@ -912,21 +878,16 @@ const rnd=a=>a[Math.floor(Math.random()*a.length)];
 const wpick=(arr,w)=>{let r=Math.random()*w.reduce((a,b)=>a+b,0);for(let i=0;i<arr.length;i++){r-=w[i];if(r<=0)return arr[i]}return arr[0]};
 const newRec=d=>({spoil:{n:0,v:0},day:d,sales:{},tips:0,onl:0,fee:0,equip:[],ing:{},waste:{},rent:0,util:0,tax:0,served:0,lost:0,starSum:0,starN:0});
 function fresh(){
-  const s={lifeV:2,off:{},badPlan:mkBadPlan(1),money:CFG.startMoney,day:1,stock:{},unlocked:{},upg:{},sell:{...DEF_SELL},reviews:[],served:0,best:0,totalRev:0,totalProfit:0,online:false,shopName:'',history:[],cur:newRec(1),yearRev:0,taxYear:0};
+  const s={off:{},hired:{},apps:{},money:CFG.startMoney,day:1,stock:{},unlocked:{},upg:{},sell:{...DEF_SELL},reviews:[],served:0,best:0,totalRev:0,totalProfit:0,online:false,shopName:'',history:[],cur:newRec(1),yearRev:0,taxYear:0};
   Object.keys(ITEMS).forEach(k=>{s.stock[k]=[];s.unlocked[k]=ITEMS[k].unlock===0});
   return s;
 }
 let S, R={mode:'prep',tab:'kho',plan:{}}, cup, timer=null, uid=0;
-function migrate(d){const u=d.unlocked||{};
-  if(u.dao&&!u.f_dao){S.unlocked.hong=true;S.unlocked.f_dao=true}
-  if(u.dau&&!u.f_dau)S.unlocked.f_dau=true;
-  const refund={khoaimon:250000,tctrang:200000,pudding:250000,kemtrung:400000};
-  Object.keys(refund).forEach(k=>{if(u[k])S.money+=refund[k]});
-  ['khoaimon','dau','dao','tctrang','pudding','kemtrung'].forEach(k=>{delete S.stock[k];delete S.unlocked[k];delete S.sell[k]});
-}
-function loadFrom(d){const f=fresh();Object.keys(d.stock).forEach(k=>{if(typeof d.stock[k]==='number'){const q=d.stock[k];d.stock[k]=[];addStock(k,q,{day:d.day||1,stock:d.stock})}});S={...f,...d,stock:{...f.stock,...d.stock},sell:{...f.sell,...d.sell},unlocked:{...f.unlocked,...d.unlocked}};migrate(d);if(!d.cur)S.cur=newRec(S.day);if(S.seenLv==null)S.seenLv=levelOf(Math.max(1,S.day-1));if(S.evDay!==S.day)rollDay(S.day);S.hired=S.hired||{};STAFF.forEach(x=>{if(S.upg[x.id])S.hired[x.id]=true});if(S.upg.staff1&&S.upg.staff3)S.upg.staff1=false;if(S.upg.guard1&&S.upg.guard2)S.upg.guard1=false;if(S.online&&S.tablets==null)S.tablets=1;S.apps=S.apps||{};syncFlav();if(d.totalProfit==null)S.totalProfit=(S.history||[]).reduce((a,r)=>a+recRev(r)-recCost(r),0);if(!(d.lifeV>=2)){Object.keys(LIFE_OLD).forEach(k=>{const d=ITEMS[k].life-LIFE_OLD[k];(S.stock[k]||[]).forEach(b=>{if(b.exp<99999)b.exp+=d})});S.lifeV=2;save()}try{sanitize()}catch(e){}(S.reviews||[]).forEach(r=>{if(!r.k)r.k=(r.t||'').replace(/\p{Extended_Pictographic}|\uFE0F/gu,'').trim()});if(!d.badPlan){S.badPlan=mkBadPlan(S.day);save()}}
+function loadFrom(d){const f=fresh();S={...f,...d,stock:{...f.stock,...d.stock},sell:{...f.sell,...d.sell},unlocked:{...f.unlocked,...d.unlocked}};
+  if(S.seenLv==null)S.seenLv=levelOf(Math.max(1,S.day-1));if(S.evDay!==S.day)rollDay(S.day);
+  syncFlav();sanitize()}
 function load(){let raw=null;try{raw=localStorage.getItem(SAVE)}catch(e){}
-  if(raw){try{const d=JSON.parse(raw);if(d&&d.stock){loadFrom(d);return true}}catch(e){}
+  if(raw){try{const d=JSON.parse(raw);if(validSave(d)){loadFrom(d);return true}}catch(e){}
     /* đọc lỗi: cất bản cũ riêng, không ghi đè */try{localStorage.setItem(SAVE+'_rescue',raw)}catch(e){}R.loadErr=true}
   S=fresh();return false}
 /* ---------- KHO THEO MẺ, CÓ HẠN DÙNG ---------- */
@@ -941,16 +902,16 @@ function lifeTxt(k){const l=CFG.life[k];return l?(l===1?'Dùng trong ngày':'Đ�
 const revCount=()=>Math.max(S.revTotal||0,S.reviews.length);
 /* bản lưu gọn: bỏ khoá chống trùng của đánh giá (tự tính lại khi mở game), bản dự phòng chỉ giữ 300 đánh giá mới nhất */
 function pack(maxRev){return JSON.stringify(S,function(k,v){if(this===S&&k==='reviews'){const a=maxRev?v.slice(0,maxRev):v;return a.map(r=>{const{k:_k,...o}=r;return o})}return v})}
-function dropBaks(){['tsBak3','tsBak2','tsBak1',SAVE+'_rescue'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}
+function dropBaks(){['ttnBak3','ttnBak2','ttnBak1',SAVE+'_rescue'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}
 function save(){let js;try{js=pack()}catch(e){R.noStore=true;return}
   try{localStorage.setItem(SAVE,js);R.noStore=false;return}catch(e){}
   /* đầy bộ nhớ: xoá bản dự phòng cũ rồi thử lại */
   dropBaks();try{localStorage.setItem(SAVE,js);R.noStore=false}catch(e){R.noStore=true}}
 /* thử xem máy có cho lưu không */
-function storeOk(){try{localStorage.setItem('tsT','1');const ok=localStorage.getItem('tsT')==='1';localStorage.removeItem('tsT');return ok}catch(e){return false}}
-function autoBak(){try{const cur=pack(300);const b1=localStorage.getItem('tsBak1'),b2=localStorage.getItem('tsBak2');
-  try{if(b2)localStorage.setItem('tsBak3',b2);if(b1)localStorage.setItem('tsBak2',b1);localStorage.setItem('tsBak1',cur)}
-  catch(e){/* đầy bộ nhớ: bỏ dự phòng cũ, ưu tiên giữ bản chính */['tsBak3','tsBak2'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});try{localStorage.setItem('tsBak1',cur)}catch(e){try{localStorage.removeItem('tsBak1')}catch(e){}}}}catch(e){}}
+function storeOk(){try{localStorage.setItem('ttnT','1');const ok=localStorage.getItem('ttnT')==='1';localStorage.removeItem('ttnT');return ok}catch(e){return false}}
+function autoBak(){try{const cur=pack(300);const b1=localStorage.getItem('ttnBak1'),b2=localStorage.getItem('ttnBak2');
+  try{if(b2)localStorage.setItem('ttnBak3',b2);if(b1)localStorage.setItem('ttnBak2',b1);localStorage.setItem('ttnBak1',cur)}
+  catch(e){/* đầy bộ nhớ: bỏ dự phòng cũ, ưu tiên giữ bản chính */['ttnBak3','ttnBak2'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});try{localStorage.setItem('ttnBak1',cur)}catch(e){try{localStorage.removeItem('ttnBak1')}catch(e){}}}}catch(e){}}
 const newCup=()=>({cost:0,size:null,sugar:null,ice:null,base:null,flav:null,tops:[],cheese:false,used:false});
 
 /* ---------- ECONOMY ---------- */
@@ -969,7 +930,7 @@ function sanitize(){
   if(bad||!isFinite(S.money)||S.money>cap){
     const H=S.history||[],prof=H.reduce((a,r)=>a+recRev(r)-recCost(r),0);
     S.totalProfit=prof;S.totalRev=H.reduce((a,r)=>a+recRev(r),0);S.yearRev=Math.min(S.yearRev||0,S.totalRev);
-    if(!isFinite(S.money))S.money=cap+1;if(S.money>cap||bad)cheatHit();
+    if(!isFinite(S.money))S.money=CFG.startMoney;else S.money=Math.min(S.money,cap);
     if(!isFinite(S.cur.tips)||S.cur.tips>cap)S.cur.tips=0;
     save()}}
 const unitCost=o=>CFG.cost[o.base]+(o.flav&&ITEMS[o.flav]?CFG.cost[o.flav]:0)+o.tops.reduce((a,t)=>a+CFG.cost[t],0)+(o.cheese?CFG.cost.cheese:0)+CFG.cost.cup;
@@ -1038,29 +999,8 @@ function bindLoan(){const g=$('loanGo'),p=$('loanPay');
 const ecost=k=>CFG.cost[k]*(evIs('sale')&&ev().k===k?.7:1);
 function evCard(){const e=ev();
   if(!e)return '';return `<div class="evc"><span>${ico(EVS[e.id].ic)}</span><div><b>Hôm nay: ${EVS[e.id].n}</b><small>${evText(e)}</small></div></div>`}
-/* sự cố mất tiền: gian lận thì mất gần hết; người chơi thật 0–2 lần trong 90 ngày, mất dưới 1 triệu */
-/* const BAD=[
-  {id:'trom',n:'Trộm ghé quán!',ic:'sad',all:'Đêm qua trộm cạy két, lấy sạch tiền.',some:'Đêm qua trộm cạy két, lấy mất %.'},
-  {id:'thue',n:'Rắc rối về thuế',ic:'receipt',all:'Cơ quan thuế phát hiện doanh thu không khớp sổ sách. Chủ quán trốn thuế, tài sản bị tịch thu.',some:'Nộp thuế chậm, quán bị phạt %.'},
-  {id:'qltt',n:'Quản lý thị trường kiểm tra',ic:'warn',all:'Tiền mặt trong két quá lớn mà không chứng minh được nguồn gốc, bị tạm giữ toàn bộ.',some:'Đoàn kiểm tra nhắc lỗi vệ sinh quầy pha, quán bị phạt %.'},
-  {id:'lua',n:'Bị lừa qua điện thoại',ic:'phone',all:'Kẻ gian giả danh ngân hàng gọi tới, chủ quán lỡ chuyển hết tiền trong két.',some:'Kẻ gian giả danh ngân hàng gọi tới, chủ quán lỡ chuyển %.'},
-  {id:'coin',n:'"Đầu tư" tiền ảo',ic:'chartdown',all:'Chủ quán dồn hết tiền vào một sàn tiền ảo lạ. Sàn sập, mất trắng.',some:'Chủ quán thử "đầu tư" tiền ảo trên một sàn lạ, lỗ %.'}]; */
-const BAD = [];
-function mkBadPlan(start){const r=Math.random(),n=r<.3?0:r<.7?1:2,ids=BAD.map(b=>b.id).sort(()=>Math.random()-.5),days=[];
-  while(days.length<n){const d=start+10+Math.floor(Math.random()*80);if(!days.includes(d))days.push(d)}
-  days.sort((a,b)=>a-b);return {start,ev:days.map((d,i)=>({d,id:ids[i],done:false}))}}
-/* két gian lận: gọi từ sanitize() lúc mở game hoặc luật "trước ngày X két trên Y" */
-function cheatHit(){const keep=(1+Math.floor(Math.random()*9))*100000,lost=Math.max(0,S.money-keep);S.money=keep;S.cur.stolen=(S.cur.stolen||0)+lost;S.badNow={id:rnd(BAD).id,all:1,v:lost,keep};save()}
-function badCheck(){
-  if(S.day<CFG.thiefDay&&S.money>CFG.thiefMoney)cheatHit();
-  if(!S.badNow&&S.badPlan){const e=S.badPlan.ev.find(x=>!x.done&&x.d<=S.day);
-    if(e){e.done=true;if(S.day-e.d<=1){const v=Math.min(Math.round((200000+Math.random()*700000)/50000)*50000,Math.floor(S.money/3/1000)*1000);
-      if(v>=10000){S.money-=v;S.cur.bad=(S.cur.bad||0)+v;S.badNow={id:e.id,v}}}save()}}
-  const b=S.badNow;if(!b)return false;S.badNow=null;save();sfx('bad');const t=BAD.find(x=>x.id===b.id)||BAD[0];
-  ask(`<div class="pbig">${ico(t.ic)}</div><h2>${t.n}</h2><p>${b.all?t.all:t.some.replace('%','<b>'+fmt(b.v)+'</b>')}</p>${b.all?`<p class="warnline">Trong két chỉ còn ${fmt(b.keep)}.</p>`:''}`,[['Buồn ghê',()=>{head();if(R.mode==='prep')refreshPrep()},1]]);return true}
-/* chờ hết màn hình chào và hộp thoại khác rồi mới báo trộm / quà */
 function prepChecks(){if(R.mode!=='prep'||!$('splash').hidden)return;if(!$('modal').hidden){clearTimeout(R.pcT);R.pcT=setTimeout(prepChecks,500);return}
-  if(storeCheck())return;if(!badCheck()&&S.gift){giftCheck();return}bakRemind()}
+  if(storeCheck())return;if(S.gift){giftCheck();return}bakRemind()}
 function storeCheck(){
   if(R.loadErr){R.loadErr=false;ask(`<div class="pbig">${ico('warn')}</div><h2>Không đọc được tiến trình cũ</h2><p>Bản lưu trong máy bị lỗi nên game mở quán mới. Bản cũ vẫn được giữ lại, không bị xoá.</p><p>Vào <b>Cài đặt > Khôi phục bản tự lưu</b> để lấy lại, hoặc dán mã sao lưu nếu có.</p>`,[['Để sau',()=>{}],['Khôi phục ngay',autoRestoreDlg,1]]);return true}
   if((R.noStore||!storeOk())&&!R.noStoreWarned){R.noStore=true;R.noStoreWarned=true;
@@ -1070,10 +1010,13 @@ function storeCheck(){
 function bakRemind(){if(R.noStore||S.day<8||S.day-(S.bakDay||0)<7||S.day-(S.bakAsk||0)<7)return;S.bakAsk=S.day;save();
   ask(`<div class="pbig">${ico('box')}</div><h2>Sao lưu tiến trình nhé?</h2><p>Tạo mã sao lưu để giữ quán khi đổi máy, xoá app hay máy tự dọn dữ liệu. Chỉ mất vài giây.</p>`,[['Để sau',()=>{}],['Tạo mã',backupDlg,1]])}
 function autoRestoreDlg(){$('card').onchange=null;
-  const list=[['tsBak1','Cuối ngày gần nhất'],['tsBak2','Một ngày trước đó'],['tsBak3','Hai ngày trước đó'],[SAVE+'_rescue','Bản bị lỗi lúc mở game']].map(([k,n])=>{try{const r=localStorage.getItem(k);if(!r)return null;const d=JSON.parse(r);return d&&d.stock?{k,n,d}:null}catch(e){return null}}).filter(Boolean);
+  const list=[['ttnBak1','Cuối ngày gần nhất'],['ttnBak2','Một ngày trước đó'],['ttnBak3','Hai ngày trước đó'],[SAVE+'_rescue','Bản bị lỗi lúc mở game']].map(([k,n])=>{try{const r=localStorage.getItem(k);if(!r)return null;const d=JSON.parse(r);return d&&d.stock?{k,n,d}:null}catch(e){return null}}).filter(Boolean);
   if(!list.length){ask(`<h2>Chưa có bản tự lưu</h2><p>Game tự lưu mỗi cuối ngày. Nếu có mã sao lưu, dùng Khôi phục từ mã.</p>`,[['Đóng',showSettings],['Khôi phục từ mã',()=>restoreDlg(),1]]);return}
   ask(`<h2>Khôi phục bản tự lưu</h2><p>Chọn bản muốn lấy lại. Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,[['Huỷ',showSettings],...list.map(x=>[`${x.n}: ${esc(x.d.shopName||'Tiệm Trà Nhỏ')} · Ngày ${x.d.day} · ${fmt(x.d.money||0)}`,()=>applyRestore(x.d),1])])}
-function applyRestore(d){try{localStorage.setItem(SAVE,JSON.stringify(d))}catch(e){}try{loadFrom(d)}catch(e){toast('Bản này bị lỗi, thử bản khác');return}save();R.plan={};R.tab='kho';document.title=shopName();renderPrep();toast('Đã khôi phục ngày '+S.day+(R.noStore?' (máy đang chặn lưu, nhớ tạo mã sao lưu)':''))}
+function applyRestore(d){const prev=S;let raw=null;try{raw=localStorage.getItem(SAVE)}catch(e){}
+  try{if(!validSave(d))throw Error('invalid save');loadFrom(JSON.parse(JSON.stringify(d)));save();R.plan={};R.tab='kho';document.title=shopName();renderPrep()}
+  catch(e){S=prev;try{if(raw===null)localStorage.removeItem(SAVE);else localStorage.setItem(SAVE,raw)}catch(_){}toast('Bản này bị lỗi, thử bản khác');return}
+  toast('Đã khôi phục ngày '+S.day+(R.noStore?' (máy đang chặn lưu, nhớ tạo mã sao lưu)':''))}
 function giftCheck(){if(!S.gift)return;sfx('lvup');const g=S.gift;S.gift=null;if(g.k==='bung')S.bungN=0;S.money+=g.v;S.cur.gift=(S.cur.gift||0)+g.v;save();
   ask(`<div class="pbig">${ico('gift')}</div><h2>${g.n}</h2><p>${g.d}</p><p class="lvup">+${fmt(g.v)} vào két</p>`,[['Tuyệt quá',()=>{head();refreshPrep()},1]])}
 function traffic(){
@@ -2260,9 +2203,6 @@ function ownerPanel(){
   ${oRow('Ngưỡng doanh thu năm không chịu thuế','taxThreshold',CFG.taxThreshold,1000000,'đ')}
   ${oRow('Thuế GTGT trên doanh thu','vat',CFG.vat,0.5,'%')}
   ${oRow('Thuế TNCN trên doanh thu','pit',CFG.pit,0.5,'%')}
-  ${oRow('Trộm: két trên','thiefMoney',CFG.thiefMoney,1000000,'đ')}
-  ${oRow('Trộm: trước ngày','thiefDay',CFG.thiefDay,1,'')}
-  ${oRow('Trộm: chừa lại trong két','thiefLeft',CFG.thiefLeft,50000,'đ')}
   ${oRow('Mã chủ game (chỉ số)','ownerPin',CFG.ownerPin,1,'')}
   <div class="sec">Giá nhập nguyên liệu (mỗi phần)</div>
   ${Object.keys(ITEMS).map(k=>oRow(ITEMS[k].n,'cost.'+k,CFG.cost[k],500,'đ')).join('')}
@@ -2311,8 +2251,8 @@ const THEMES=[
   {id:'khoaimon',n:'Tím khoai môn',bg:'#efe7f7',panel:'#faf6fd',line:'#d7c6ea',ink:'#2d2238',soft:'#62507a',acc:'#9b6bd1',accd:'#7147a3',t:['#b39ddb',.26]},
   {id:'dem',n:'Đêm dịu',bg:'#2b2433',panel:'#3a3144',line:'#574a63',ink:'#f5ecf7',soft:'#cbbad3',acc:'#f08fb0',accd:'#b85f80',t:['#3b2d5c',.19]}
 ];
-let THEME='kem';try{THEME=localStorage.getItem('tsTheme')||'kem'}catch(e){}
-function applyTheme(id){const t=THEMES.find(x=>x.id===id)||THEMES[0];THEME=t.id;try{localStorage.setItem('tsTheme',t.id)}catch(e){}
+let THEME='kem';try{THEME=localStorage.getItem('ttnTheme1')||'kem'}catch(e){}
+function applyTheme(id){const t=THEMES.find(x=>x.id===id)||THEMES[0];THEME=t.id;try{localStorage.setItem('ttnTheme1',t.id)}catch(e){}
   const r=document.documentElement.style;r.setProperty('--bg',t.bg);r.setProperty('--panel',t.panel);r.setProperty('--line',t.line);r.setProperty('--ink',t.ink);r.setProperty('--soft',t.soft);r.setProperty('--pink',t.acc);r.setProperty('--pink-d',t.accd);
   r.setProperty('--tint',t.t?t.t[0]:'transparent');r.setProperty('--tintm','#ffffff');r.setProperty('--tinta',t.t?t.t[1]:0);document.body.classList.toggle('dark',t.id==='dem');
   let m=document.querySelector('meta[name=theme-color]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}m.content=t.bg}
@@ -2321,8 +2261,8 @@ function themeDlg(){$('card').onchange=null;
   $('modal').hidden=false;$('card').querySelectorAll('[data-th]').forEach(b=>b.onclick=()=>{applyTheme(b.dataset.th);themeDlg()});$('thClose').onclick=showSettings}
 /* ---------- ÂM THANH (tự tạo bằng Web Audio, không cần file) ---------- */
 const AU={ctx:null,on:true,mus:true};
-try{const a=JSON.parse(localStorage.getItem('tsAudio'));if(a){AU.on=a.on!==false;AU.mus=a.mus!==false;AU.season=a.season||null}}catch(e){}
-function saveAu(){try{localStorage.setItem('tsAudio',JSON.stringify({on:AU.on,mus:AU.mus,season:AU.season||null}))}catch(e){}}
+try{const a=JSON.parse(localStorage.getItem('ttnAudio1'));if(a){AU.on=a.on!==false;AU.mus=a.mus!==false;AU.season=a.season||null}}catch(e){}
+function saveAu(){try{localStorage.setItem('ttnAudio1',JSON.stringify({on:AU.on,mus:AU.mus,season:AU.season||null}))}catch(e){}}
 function au(){
   if(!AU.ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;const c=AU.ctx=new C();
     AU.master=c.createGain();AU.master.gain.value=.9;AU.master.connect(c.destination);
@@ -2498,54 +2438,46 @@ function showTour(isNew,fromGame,after){
   if(isNew)tw.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='nameIn')finish()});
 }
 
-/* ---------- SAO LƯU / KHÔI PHỤC BẰNG MÃ ---------- */
-const BAK_SALT='ttn-bak-7f3a';
+/* ---------- SAO LƯU / KHÔI PHỤC TRÊN THIẾT BỊ ---------- */
+const BAK_SALT='ttn2-bak-v1';
 function bakHash(t){let h=0x811c9dc5;const x=BAK_SALT+t;for(let i=0;i<x.length;i++){h^=x.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 const b64e=u8=>{let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
 const b64d=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
 async function zipBytes(u8,dir){const C=dir?window.CompressionStream:window.DecompressionStream;if(!C)return null;const st=new Blob([u8]).stream().pipeThrough(new C('gzip'));return new Uint8Array(await new Response(st).arrayBuffer())}
+const plain=x=>x&&typeof x==='object'&&!Array.isArray(x);
+function validSave(d){return plain(d)&&Number.isSafeInteger(d.day)&&d.day>0&&Number.isFinite(d.money)&&plain(d.stock)&&plain(d.sell)&&plain(d.unlocked)&&plain(d.upg)&&plain(d.cur)&&Array.isArray(d.reviews)&&Array.isArray(d.history)&&
+  Object.entries(d.stock).every(([k,bs])=>ITEMS[k]&&Array.isArray(bs)&&bs.every(b=>plain(b)&&Number.isSafeInteger(b.q)&&b.q>=0&&Number.isSafeInteger(b.exp)&&b.exp>=0))}
 async function makeBackup(){const json=JSON.stringify(S),raw=new TextEncoder().encode(json);let z=null;try{z=await zipBytes(raw,1)}catch(e){}
-  const body=(z?'z':'p')+b64e(z||raw);return 'TTN1.'+body+'.'+bakHash(body)}
-async function readBackup(code){code=String(code||'').replace(/\s+/g,'');const m=code.match(/^TTN1\.([zp][A-Za-z0-9_-]+)\.([0-9a-z]+)$/);if(!m)throw 'Mã không đúng định dạng';
+  const body=(z?'z':'p')+b64e(z||raw);return 'TTN2.'+body+'.'+bakHash(body)}
+async function readBackup(code){code=String(code||'').replace(/\s+/g,'');if(code.length>5000000)throw 'Mã quá dài';
+  const m=code.match(/^TTN2\.([zp][A-Za-z0-9_-]+)\.([0-9a-z]+)$/);if(!m)throw 'Mã không đúng định dạng';
   if(bakHash(m[1])!==m[2])throw 'Mã bị sai hoặc đã bị sửa';let u=b64d(m[1].slice(1));if(m[1][0]==='z'){u=await zipBytes(u,0);if(!u)throw 'Trình duyệt này quá cũ để đọc mã, thử Chrome hoặc Safari mới hơn'}
-  const d=JSON.parse(new TextDecoder().decode(u));if(!d||!d.stock||!d.day)throw 'Mã không có dữ liệu game';return d}
-/* mã sao lưu 8 số: bản sao lưu cất trên máy chủ của game (Cloudflare), 8 số là chìa để lấy lại */
-const CLOUD='https://tiemtranho-api.trongnhi110266.workers.dev';
-async function cloudFetch(path,opt){const ac=new AbortController(),t=setTimeout(()=>ac.abort(),15000);
-  try{const r=await fetch(CLOUD+path,{...opt,signal:ac.signal});const j=await r.json().catch(()=>({}));if(!r.ok)throw j.error||'Máy chủ báo lỗi';return j}
-  catch(e){throw typeof e==='string'?e:'Không kết nối được máy chủ'}finally{clearTimeout(t)}}
-async function cloudSave(long){S.cloud=S.cloud||{};const j=await cloudFetch('/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:S.cloud.key,code:S.cloud.code||undefined,data:long})});
-  if(!/^\d{8}$/.test(j.code||''))throw 'Máy chủ trả mã sai';S.cloud.code=j.code;save();return j.code}
-async function cloudLoad(code){const j=await cloudFetch('/load?code='+code,{method:'GET'});const d=await readBackup(j.data);d.cloud={key:(d.cloud||{}).key,code};return d}
-const fmtCode=c=>c.slice(0,4)+' '+c.slice(4);
-async function backupDlg(){$('card').onchange=null;S.bakDay=S.day;save();
-  $('card').innerHTML=`<h2>Sao lưu tiến trình</h2><p>Đang tạo mã…</p>`;$('modal').hidden=false;
-  S.cloud=S.cloud||{};if(!S.cloud.key){const a=new Uint8Array(12);crypto.getRandomValues(a);S.cloud.key=[...a].map(x=>x.toString(36).padStart(2,'0')).join('').slice(0,24)}save();
-  let code;try{code=await makeBackup()}catch(e){$('card').innerHTML=`<h2>Không tạo được mã</h2><button class="big" id="bkClose">Đóng</button>`;$('bkClose').onclick=showSettings;return}
-  $('card').innerHTML=`<h2>Sao lưu tiến trình</h2><p>Đang gửi lên máy chủ…</p>`;
-  let c8=null,cErr='';try{c8=await cloudSave(code)}catch(e){cErr=e}
-  $('card').innerHTML=`<h2>Mã sao lưu</h2>${c8?`<p>Ghi lại 8 số này. Bị mất tiến trình thì vào Cài đặt > Khôi phục từ mã rồi nhập 8 số (cần có mạng). Sao lưu lại lần sau vẫn giữ nguyên mã này.</p><div class="c8" id="c8">${fmtCode(c8)}</div><div class="sndrow"><button class="sbtn pri" id="c8Copy">Chép 8 số</button></div>`:`<p class="warnline"><b>Chưa tạo được mã 8 số: ${esc(cErr)}.</b> Dùng mã dài bên dưới, hoặc thử lại khi có mạng.</p>`}
+  const d=JSON.parse(new TextDecoder().decode(u));if(!validSave(d))throw 'Bản sao lưu không có dữ liệu game hợp lệ';return d}
+function markBackup(){S.bakDay=S.day;save()}
+async function backupDlg(){$('card').onchange=null;
+  $('card').innerHTML='<h2>Sao lưu tiến trình</h2><p>Đang tạo mã…</p>';$('modal').hidden=false;
+  let code;try{code=await makeBackup()}catch(e){$('card').innerHTML='<h2>Không tạo được bản sao lưu</h2><button class="big" id="bkClose">Đóng</button>';$('bkClose').onclick=showSettings;return}
+  $('card').innerHTML=`<h2>Sao lưu tiến trình</h2><p>Chép mã dài hoặc lưu file và giữ ở nơi khác. Khôi phục trên máy mới không cần mạng.</p>
     <p class="lvup">${esc(shopName())} · Ngày ${S.day} · ${fmt(S.money)}</p>
-    ${c8?'<details class="c8more"><summary>Mã dài dự phòng (dùng được khi không có mạng)</summary>':''}<textarea id="bkCode" class="rpin" readonly style="min-height:90px;font-size:12px!important;word-break:break-all">${code}</textarea>
-    <div class="sndrow"><button class="sbtn ghost" id="bkCopy">Chép mã</button><button class="sbtn ghost" id="bkFile">Lưu thành file</button></div>${c8?'</details>':''}
-    <button class="big" id="bkClose" style="margin-top:12px">Xong</button>`;
-  if($('c8Copy'))$('c8Copy').onclick=async()=>{let ok=false;try{await navigator.clipboard.writeText(c8);ok=true}catch(e){}toast(ok?'Đã chép '+fmtCode(c8):'Ghi lại 8 số: '+fmtCode(c8),4000,1)};
-  $('bkCopy').onclick=async()=>{const t=$('bkCode');let ok=false;try{await navigator.clipboard.writeText(code);ok=true}catch(e){}if(!ok){t.focus();t.select();try{ok=document.execCommand('copy')}catch(e){}}t.blur();toast(ok?'Đã chép mã':'Giữ vào ô mã để chép')};
+    <textarea id="bkCode" class="rpin" readonly style="min-height:90px;font-size:12px!important;word-break:break-all">${code}</textarea>
+    <div class="sndrow"><button class="sbtn ghost" id="bkCopy">Chép mã</button><button class="sbtn ghost" id="bkFile">Lưu thành file</button></div>
+    <button class="big" id="bkKept" style="margin-top:12px">Tôi đã giữ bản sao lưu</button><button class="sbtn ghost" id="bkClose" style="margin-top:8px">Đóng</button>`;
+  $('bkCopy').onclick=async()=>{const t=$('bkCode');let ok=false;try{await navigator.clipboard.writeText(code);ok=true}catch(e){}if(!ok){t.focus();t.select();try{ok=document.execCommand('copy')}catch(e){}}t.blur();if(ok)markBackup();toast(ok?'Đã chép mã, hãy giữ ở nơi khác':'Giữ vào ô mã để chép')};
   {let inFrame=true;try{inFrame=window.self!==window.top}catch(e){}if(inFrame)$('bkFile').hidden=true}
   $('bkFile').onclick=async()=>{const name='tiemtranho-ngay-'+S.day+'.txt',f=new File([code],name,{type:'text/plain'});
-    try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Sao lưu Tiệm Trà Nhỏ'});return}}catch(e){if(e&&e.name==='AbortError')return}
-    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)};
-  $('bkClose').onclick=showSettings}
+    try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Sao lưu Tiệm Trà Nhỏ'});markBackup();return}}catch(e){if(e&&e.name==='AbortError')return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Kiểm tra file đã tải, rồi xác nhận đã giữ bản sao lưu')};
+  $('bkKept').onclick=()=>{markBackup();showSettings()};$('bkClose').onclick=showSettings}
 function restoreDlg(msg){$('card').onchange=null;
-  $('card').innerHTML=`<h2>Khôi phục từ mã</h2><p>Nhập mã 8 số (cần có mạng), hoặc dán mã dài, hoặc chọn file sao lưu.</p>${msg?`<p class="warnline"><b>${esc(msg)}</b></p>`:''}
-    <textarea id="rsCode" class="rpin" placeholder="12345678 hoặc TTN1…" style="min-height:90px;font-size:12px!important;word-break:break-all"></textarea>
+  $('card').innerHTML=`<h2>Khôi phục tiến trình</h2><p>Dán mã sao lưu của bản game này hoặc chọn file đã lưu.</p>${msg?`<p class="warnline"><b>${esc(msg)}</b></p>`:''}
+    <textarea id="rsCode" class="rpin" placeholder="TTN2…" style="min-height:90px;font-size:12px!important;word-break:break-all"></textarea>
     <div class="sndrow"><label class="sbtn ghost" style="display:flex;align-items:center;justify-content:center;cursor:pointer">Chọn file<input type="file" id="rsFile" accept=".txt,text/plain" hidden></label></div>
     <div class="askbtns"><button class="big" id="rsGo">Khôi phục</button><button class="sbtn ghost" id="rsBack">Quay lại</button></div>`;
   $('modal').hidden=false;
-  $('rsFile').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{$('rsCode').value=t.trim();toast('Đã đọc file')})};
+  $('rsFile').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{$('rsCode').value=t.trim();toast('Đã đọc file')}).catch(()=>toast('Không đọc được file'))};
   $('rsBack').onclick=()=>{if(!$('splash').hidden)$('modal').hidden=true;else showSettings()};
-  $('rsGo').onclick=async()=>{const code=$('rsCode').value;if(isField(document.activeElement))document.activeElement.blur();let d;const c8=String(code||'').replace(/[\s.-]/g,'');try{if(/^\d{8}$/.test(c8)){$('rsGo').disabled=true;$('rsGo').textContent='Đang tải…';d=await cloudLoad(c8)}else d=await readBackup(code)}catch(e){restoreDlg(typeof e==='string'?e:'Mã không đọc được');return}
-    ask(`<div class="pbig">${ico('reload')}</div><h2>Khôi phục tiến trình?</h2><p>Bản sao lưu: <b>${esc(d.shopName||'Tiệm Trà Nhỏ')}</b> · Ngày ${d.day} · ${fmt(d.money||0)}</p><p>Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,
+  $('rsGo').onclick=async()=>{const code=$('rsCode').value;if(isField(document.activeElement))document.activeElement.blur();let d;try{d=await readBackup(code)}catch(e){restoreDlg(typeof e==='string'?e:'Mã không đọc được');return}
+    ask(`<div class="pbig">${ico('reload')}</div><h2>Khôi phục tiến trình?</h2><p>Bản sao lưu: <b>${esc(d.shopName||'Tiệm Trà Nhỏ')}</b> · Ngày ${d.day} · ${fmt(d.money)}</p><p>Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,
       [['Huỷ',()=>restoreDlg()],['Khôi phục',()=>{closeSplash();applyRestore(d)},1]])}}
 function showSettings(){
   $('card').onchange=null;
@@ -2582,7 +2514,7 @@ applyTheme(THEME);
 $('pauseBtn').onclick=pauseGame;$('setBtn').onclick=showSettings;
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{})}catch(e){}
 const had=load();if(S.sell.L>CFG.sizeCap)S.sell.L=CFG.sizeCap;R.today={stars:[]};document.title=shopName();renderPrep();
-let _lastVer=null;try{_lastVer=localStorage.getItem('tsVer');localStorage.setItem('tsVer',GAME_VERSION)}catch(e){}
+let _lastVer=null;try{_lastVer=localStorage.getItem('ttnVer1');localStorage.setItem('ttnVer1',GAME_VERSION)}catch(e){}
 showSplash(had,()=>{if(had&&_lastVer!==GAME_VERSION)showNews(true)});
 </script>
 <script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{}))}</script>
