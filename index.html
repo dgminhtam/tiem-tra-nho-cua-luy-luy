@@ -763,10 +763,10 @@ const N_LAST=['Anh','Trâm','Vy','Linh','Hân','Nhi','My','Thảo','Ngân','Tran
 const N_MID=['Minh','Ngọc','Thu','Gia','Bảo','Khánh','Hoàng','Thanh','Quỳnh','Tuấn','Hải','Phương','Mai','Đức','Kim','Nhật','Tường','Hồng','Diệu','Anh','Thiên','Xuân','Như','Cát'];
 const N_NICK=['Bé Na','Bơ','Mít','Sữa','Su Su','Bin','Tôm','Cún','Mèo Mun','Kem','Na Na','Gấu','Bống','Bi','Xoài','Chuối','Heo Hồng','Cà Rốt','Bắp','Ốc','Nấm','Mochi','Tiểu Muội','Khoai','Đậu'];
 function genName(){return uniqName(()=>Math.random()<.5?rnd(NM_HO)+' '+rnd(NM_NU):rnd(NM_HO)+' '+rnd(NM_NAM))}
-const SAVE='ttnShop1', OWNER_SAVE='ttnOwner1';
+const SAVE='ttnShop1', OWNER_SAVE='ttnOwner1', PRE_RESTORE='ttnShop1_preRestore';
 /* ===== PHIÊN BẢN GAME: mỗi lần cập nhật, tăng số và thêm một mục lên ĐẦU danh sách ===== */
-const GAME_VERSION='1.0';
-const CHANGELOG=[{v:'1.0',d:'28/09/2026',items:['Bản game độc lập: tiến trình lưu trên thiết bị','Sao lưu và khôi phục bằng file hoặc mã dài, không cần mạng']}];
+const GAME_VERSION='1.1';
+const CHANGELOG=[{v:'1.1',d:'28/09/2026',items:['Khôi phục an toàn hơn, có bản riêng trước khi khôi phục','Tiến trình cũ, mã TTN1 và mã 8 số không còn được hỗ trợ']},{v:'1.0',d:'28/09/2026',items:['Bản game độc lập: tiến trình lưu trên thiết bị','Sao lưu và khôi phục bằng file hoặc mã dài, không cần mạng']}];
 /* ===== CẤU HÌNH CỦA CHỦ GAME (người chơi không chỉnh được) ===== */
 const DEFAULT_CONFIG={
   ownerPin:'2468',          // mã vào bảng chủ game
@@ -883,9 +883,11 @@ function fresh(){
   return s;
 }
 let S, R={mode:'prep',tab:'kho',plan:{}}, cup, timer=null, uid=0;
-function loadFrom(d){const f=fresh();S={...f,...d,stock:{...f.stock,...d.stock},sell:{...f.sell,...d.sell},unlocked:{...f.unlocked,...d.unlocked}};
-  if(S.seenLv==null)S.seenLv=levelOf(Math.max(1,S.day-1));if(S.evDay!==S.day)rollDay(S.day);
-  syncFlav();sanitize()}
+function buildSave(d){if(!validSave(d))throw Error('invalid save');const prev=S,noStore=R.noStore;
+  try{const f=fresh();S={...f,...JSON.parse(JSON.stringify(d)),stock:{...f.stock,...d.stock},sell:{...f.sell,...d.sell},unlocked:{...f.unlocked,...d.unlocked}};
+    if(S.seenLv==null)S.seenLv=levelOf(Math.max(1,S.day-1));if(S.evDay!==S.day)rollDay(S.day);syncFlav();sanitize(false);return JSON.parse(pack())}
+  finally{S=prev;R.noStore=noStore}}
+function loadFrom(d){S=buildSave(d)}
 function load(){let raw=null;try{raw=localStorage.getItem(SAVE)}catch(e){}
   if(raw){try{const d=JSON.parse(raw);if(validSave(d)){loadFrom(d);return true}}catch(e){}
     /* đọc lỗi: cất bản cũ riêng, không ghi đè */try{localStorage.setItem(SAVE+'_rescue',raw)}catch(e){}R.loadErr=true}
@@ -901,17 +903,13 @@ function expireStock(){const out=[];Object.keys(S.stock).forEach(k=>{let q=0;S.s
 function lifeTxt(k){const l=CFG.life[k];return l?(l===1?'Dùng trong ngày':'Để được '+l+' ngày'):'Không hết hạn'}
 const revCount=()=>Math.max(S.revTotal||0,S.reviews.length);
 /* bản lưu gọn: bỏ khoá chống trùng của đánh giá (tự tính lại khi mở game), bản dự phòng chỉ giữ 300 đánh giá mới nhất */
-function pack(maxRev){return JSON.stringify(S,function(k,v){if(this===S&&k==='reviews'){const a=maxRev?v.slice(0,maxRev):v;return a.map(r=>{const{k:_k,...o}=r;return o})}return v})}
-function dropBaks(){['ttnBak3','ttnBak2','ttnBak1',SAVE+'_rescue'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}})}
+function pack(maxRev,state=S){return JSON.stringify(state,function(k,v){if(this===state&&k==='reviews'){const a=maxRev?v.slice(0,maxRev):v;return a.map(r=>{const{k:_k,...o}=r;return o})}return v})}
 function save(){let js;try{js=pack()}catch(e){R.noStore=true;return}
-  try{localStorage.setItem(SAVE,js);R.noStore=false;return}catch(e){}
-  /* đầy bộ nhớ: xoá bản dự phòng cũ rồi thử lại */
-  dropBaks();try{localStorage.setItem(SAVE,js);R.noStore=false}catch(e){R.noStore=true}}
+  try{localStorage.setItem(SAVE,js);R.noStore=false}catch(e){R.noStore=true}}
 /* thử xem máy có cho lưu không */
-function storeOk(){try{localStorage.setItem('ttnT','1');const ok=localStorage.getItem('ttnT')==='1';localStorage.removeItem('ttnT');return ok}catch(e){return false}}
-function autoBak(){try{const cur=pack(300);const b1=localStorage.getItem('ttnBak1'),b2=localStorage.getItem('ttnBak2');
-  try{if(b2)localStorage.setItem('ttnBak3',b2);if(b1)localStorage.setItem('ttnBak2',b1);localStorage.setItem('ttnBak1',cur)}
-  catch(e){/* đầy bộ nhớ: bỏ dự phòng cũ, ưu tiên giữ bản chính */['ttnBak3','ttnBak2'].forEach(k=>{try{localStorage.removeItem(k)}catch(e){}});try{localStorage.setItem('ttnBak1',cur)}catch(e){try{localStorage.removeItem('ttnBak1')}catch(e){}}}}catch(e){}}
+function storeOk(){const k=SAVE+'_test';try{localStorage.setItem(k,'1');const ok=localStorage.getItem(k)==='1';localStorage.removeItem(k);return ok}catch(e){return false}}
+function autoBak(){try{const cur=pack(300),b1=localStorage.getItem('ttnBak1'),b2=localStorage.getItem('ttnBak2');
+  if(b2)localStorage.setItem('ttnBak3',b2);if(b1)localStorage.setItem('ttnBak2',b1);localStorage.setItem('ttnBak1',cur)}catch(e){R.noStore=true}}
 const newCup=()=>({cost:0,size:null,sugar:null,ice:null,base:null,flav:null,tops:[],cheese:false,used:false});
 
 /* ---------- ECONOMY ---------- */
@@ -920,7 +918,7 @@ const ADD_WARN=20000,ADD_CAP=30000;/* hương, topping: trên 20k thì 80% khác
 const addOk=k=>sv(S.sell,k)<=ADD_CAP,addSkip=k=>sv(S.sell,k)>ADD_WARN&&Math.random()>=.2;
 const sv=(sell,k)=>{const v=+sell[k];return isFinite(v)&&v>0?Math.min(v,sellMax(k)):0};
 const price=(o,sell=S.sell)=>sv(sell,o.base)+(o.flav&&ITEMS[o.flav]?sv(sell,o.flav):0)+o.tops.reduce((a,t)=>a+sv(sell,t),0)+(o.cheese?sv(sell,'cheese'):0)+(o.size==='L'?sv(sell,'L'):0);
-function sanitize(){
+function sanitize(persist=true){
   Object.keys(S.sell).forEach(k=>{let v=+S.sell[k];if(!isFinite(v)||v<0)v=DEF_SELL[k]||0;S.sell[k]=Math.min(v,sellMax(k))});
   let bad=false;const fix=r=>{if(!r||!r.sales)return;let f=false;
     Object.entries(r.sales).forEach(([k,x])=>{if(x&&x.q>0&&!(x.a/x.q<=sellMax(k))){x.a=x.q*Math.min(DEF_SELL[k]||sellMax(k),sellMax(k));f=true}});
@@ -932,7 +930,7 @@ function sanitize(){
     S.totalProfit=prof;S.totalRev=H.reduce((a,r)=>a+recRev(r),0);S.yearRev=Math.min(S.yearRev||0,S.totalRev);
     if(!isFinite(S.money))S.money=CFG.startMoney;else S.money=Math.min(S.money,cap);
     if(!isFinite(S.cur.tips)||S.cur.tips>cap)S.cur.tips=0;
-    save()}}
+    if(persist)save()}}
 const unitCost=o=>CFG.cost[o.base]+(o.flav&&ITEMS[o.flav]?CFG.cost[o.flav]:0)+o.tops.reduce((a,t)=>a+CFG.cost[t],0)+(o.cheese?CFG.cost.cheese:0)+CFG.cost.cup;
 const priceIdx=o=>price(o)/price(o,DEF_SELL);
 const overCap=o=>price(o)>CFG.priceCap;
@@ -1010,15 +1008,17 @@ function storeCheck(){
 function bakRemind(){if(R.noStore||S.day<8||S.day-(S.bakDay||0)<7||S.day-(S.bakAsk||0)<7)return;S.bakAsk=S.day;save();
   ask(`<div class="pbig">${ico('box')}</div><h2>Sao lưu tiến trình nhé?</h2><p>Tạo mã sao lưu để giữ quán khi đổi máy, xoá app hay máy tự dọn dữ liệu. Chỉ mất vài giây.</p>`,[['Để sau',()=>{}],['Tạo mã',backupDlg,1]])}
 function autoRestoreDlg(){$('card').onchange=null;
-  const list=[['ttnBak1','Cuối ngày gần nhất'],['ttnBak2','Một ngày trước đó'],['ttnBak3','Hai ngày trước đó'],[SAVE+'_rescue','Bản bị lỗi lúc mở game']].map(([k,n])=>{try{const r=localStorage.getItem(k);if(!r)return null;const d=JSON.parse(r);return d&&d.stock?{k,n,d}:null}catch(e){return null}}).filter(Boolean);
+  const list=[['ttnBak1','Cuối ngày gần nhất'],['ttnBak2','Một ngày trước đó'],['ttnBak3','Hai ngày trước đó'],[PRE_RESTORE,'Trước lần khôi phục'],[SAVE+'_rescue','Bản bị lỗi lúc mở game']].map(([k,n])=>{try{const r=localStorage.getItem(k);if(!r)return null;const d=JSON.parse(r);return validSave(d)?{k,n,d}:null}catch(e){return null}}).filter(Boolean);
   if(!list.length){ask(`<h2>Chưa có bản tự lưu</h2><p>Game tự lưu mỗi cuối ngày. Nếu có mã sao lưu, dùng Khôi phục từ mã.</p>`,[['Đóng',showSettings],['Khôi phục từ mã',()=>restoreDlg(),1]]);return}
   ask(`<h2>Khôi phục bản tự lưu</h2><p>Chọn bản muốn lấy lại. Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,[['Huỷ',showSettings],...list.map(x=>[`${x.n}: ${esc(x.d.shopName||'Tiệm Trà Nhỏ')} · Ngày ${x.d.day} · ${fmt(x.d.money||0)}`,()=>applyRestore(x.d),1])])}
-function applyRestore(d){const prev=S;let raw=null;try{raw=localStorage.getItem(SAVE)}catch(e){}
-  try{if(!validSave(d))throw Error('invalid save');loadFrom(JSON.parse(JSON.stringify(d)));save();R.plan={};R.tab='kho';document.title=shopName();renderPrep()}
-  catch(e){S=prev;try{if(raw===null)localStorage.removeItem(SAVE);else localStorage.setItem(SAVE,raw)}catch(_){}toast('Bản này bị lỗi, thử bản khác');return}
-  toast('Đã khôi phục ngày '+S.day+(R.noStore?' (máy đang chặn lưu, nhớ tạo mã sao lưu)':''))}
+function restoreStorageError(){R.noStore=true;ask('<h2>Không thể lưu bản khôi phục</h2><p>Tiến trình hiện tại vẫn đang mở trong phiên này. Hãy xuất bản sao lưu trước khi tắt game hoặc thử khôi phục lại.</p>',[['Để sau',()=>{}],['Tạo mã sao lưu',backupDlg,1]])}
+function applyRestore(d){let next,current;try{next=buildSave(d);current=pack()}catch(e){toast('Bản này bị lỗi, thử bản khác');return false}
+  try{localStorage.setItem(PRE_RESTORE,current)}catch(e){restoreStorageError();return false}
+  try{localStorage.setItem(SAVE,pack(0,next))}catch(e){restoreStorageError();return false}
+  clearInterval(timer);clearTimeout(R.autoT);clearTimeout(R.pcT);timer=null;S=next;R={mode:'prep',tab:'kho',plan:{},today:{stars:[]}};cup=newCup();uid=0;
+  document.title=shopName();renderPrep();toast('Đã khôi phục ngày '+S.day);return true}
 function giftCheck(){if(!S.gift)return;sfx('lvup');const g=S.gift;S.gift=null;if(g.k==='bung')S.bungN=0;S.money+=g.v;S.cur.gift=(S.cur.gift||0)+g.v;save();
-  ask(`<div class="pbig">${ico('gift')}</div><h2>${g.n}</h2><p>${g.d}</p><p class="lvup">+${fmt(g.v)} vào két</p>`,[['Tuyệt quá',()=>{head();refreshPrep()},1]])}
+  ask(`<div class="pbig">${ico('gift')}</div><h2>${esc(g.n)}</h2><p>${esc(g.d)}</p><p class="lvup">+${fmt(g.v)} vào két</p>`,[['Tuyệt quá',()=>{head();refreshPrep()},1]])}
 function traffic(){
   const r=rating(),rf=(.55+(r-1)/4*.9)*Math.min(1,Math.max(.6,.6+(r-3.5)*.4))*(S.day<10?.8+.02*S.day:1);/* tăng khách mượt theo sao, 10 ngày đầu tăng từ từ */
   const boost=1+(S.upg.sign?.2:0)+(S.upg.ads?.25:0)+Math.min(S.day,40)*.012;
@@ -1344,7 +1344,7 @@ function paneRev(){
   const PER=15,pages=Math.max(1,Math.ceil(list.length/PER));revPage=Math.min(Math.max(1,revPage),pages);
   const pager=pages>1?pagerHTML(revPage,pages):'';
   h+=pager;
-  h+=list.length?list.slice((revPage-1)*PER,revPage*PER).map(([x,gi])=>`<div class="rev${x.s<=2?' bad':''}">${x.st!=null&&STARS[x.st]?`<span class="rface rstar"><i class="rfimg" style="${starBg(STARS[x.st].f,1,40,39)}"></i></span>`:`<span class="rface">${x.f||'🙂'}</span>`}<div class="rbody"><div class="rtop"><b>${esc(x.n||'Khách')}</b>${x.tg?`<span class="tag" style="background:#9b5fd0;color:#fff">⭐ ${esc(x.tg)}</span>`:''}${x.o?'<span class="tag">'+ico('phone')+'</span>':''}<span class="rday">Ngày ${x.d}</span></div><div class="stars">${starStr(x.s)}</div><p>${esc(x.t)}</p>${x.rp?`<div class="rrep"><b>Phản hồi của quán</b><span>${esc(x.rp)}</span><button class="rplink" data-rp="${gi}">Sửa</button></div>`:`<button class="rpbtn" data-rp="${gi}">Trả lời</button>`}</div>${x.b&&ITEMS[x.b]?`<span class="rcup">${cupHTML({base:x.b,flav:x.fl,tops:(x.tp||[]).filter(t=>ITEMS[t]),size:x.sz||'M',ice:null},true)}</span>`:''}</div>`).join(''):`<p class="note">${ico('star')} ${all.length?'Không có đánh giá nào khớp':'Chưa có đánh giá'}</p>`;
+  h+=list.length?list.slice((revPage-1)*PER,revPage*PER).map(([x,gi])=>`<div class="rev${x.s<=2?' bad':''}">${x.st!=null&&STARS[x.st]?`<span class="rface rstar"><i class="rfimg" style="${starBg(STARS[x.st].f,1,40,39)}"></i></span>`:`<span class="rface">${esc(x.f||'🙂')}</span>`}<div class="rbody"><div class="rtop"><b>${esc(x.n||'Khách')}</b>${x.tg?`<span class="tag" style="background:#9b5fd0;color:#fff">⭐ ${esc(x.tg)}</span>`:''}${x.o?'<span class="tag">'+ico('phone')+'</span>':''}<span class="rday">Ngày ${x.d}</span></div><div class="stars">${starStr(x.s)}</div><p>${esc(x.t)}</p>${x.rp?`<div class="rrep"><b>Phản hồi của quán</b><span>${esc(x.rp)}</span><button class="rplink" data-rp="${gi}">Sửa</button></div>`:`<button class="rpbtn" data-rp="${gi}">Trả lời</button>`}</div>${x.b&&ITEMS[x.b]?`<span class="rcup">${cupHTML({base:x.b,flav:x.fl,tops:(x.tp||[]).filter(t=>ITEMS[t]),size:x.sz||'M',ice:null},true)}</span>`:''}</div>`).join(''):`<p class="note">${ico('star')} ${all.length?'Không có đánh giá nào khớp':'Chưa có đánh giá'}</p>`;
   h+=pager;
   $('pane').innerHTML=h;
   $('pane').querySelectorAll('[data-rf]').forEach(b=>b.onclick=()=>{const v=b.dataset.rf;revF=v==='all'?null:v==='nr'?'nr':(revF===+v?null:+v);revPage=1;paneRev()});
@@ -2150,7 +2150,7 @@ function paneSum(){
   ${g.wage-(g.ot||0)?`<div class="crow"><span>Lương nhân viên</span><span>${vn(g.wage-(g.ot||0))}</span></div>`:''}${g.ot?`<div class="crow"><span>Tăng ca nhân viên pha chế</span><span>${vn(g.ot)}</span></div>`:''}${g.bad?`<div class="crow"><span>Sự cố mất tiền</span><span>${vn(g.bad)}</span></div>`:''}
   ${g.loanInt?`<div class="crow"><span>Lãi vay</span><span>${vn(g.loanInt)}</span></div>`:''}
   <div class="crow"><span>Máy móc, trang bị & công thức</span><span>${vn(eqTot)}</span></div>
-  ${g.equip.map(e=>`<div class="crow sub"><span>– ${e.n}${mode!=='day'?' (ngày '+e.d+')':''}</span><span>${vn(e.v)}</span></div>`).join('')}
+  ${g.equip.map(e=>`<div class="crow sub"><span>– ${esc(e.n)}${mode!=='day'?' (ngày '+e.d+')':''}</span><span>${vn(e.v)}</span></div>`).join('')}
   ${g.fee||S.online?`<div class="crow"><span>Phí app giao hàng (${CFG.commission}%)</span><span>${vn(g.fee)}</span></div>`:''}
   <div class="crow"><span>Nguyên liệu</span><span>${vn(ingTot)}</span></div>
   ${Object.entries(g.ing).sort((a,b)=>b[1].v-a[1].v).map(([k,x])=>`<div class="trow sub"><div>– ${iname(k)}: ${x.q} phần</div><div>${vn(x.v/x.q)}</div><div>${vn(x.v)}</div></div>`).join('')}
@@ -2418,7 +2418,8 @@ function tourSlides(){
 }
 function showTour(isNew,fromGame,after){
   const sp=$('splash'),sl=tourSlides();
-  if(isNew)sl.push(['Đặt tên quán','',`<div class="till"><div style="text-align:center"><img class="ico" src="img/ic_cupfull.png" alt="" style="width:64px;height:64px"></div><input id="nameIn" class="pinbox nm" maxlength="30" placeholder="Ví dụ: Trà Sữa Nhà Mèo" aria-label="Tên quán"></div>`,1]);
+  if(isNew){sl.unshift(['Tiến trình mới','Bản game cũ, mã TTN1 và mã 8 số không thể khôi phục. Hãy giữ mã TTN2 hoặc file sao lưu để chuyển quán sang máy khác.','']);
+    sl.push(['Đặt tên quán','',`<div class="till"><div style="text-align:center"><img class="ico" src="img/ic_cupfull.png" alt="" style="width:64px;height:64px"></div><input id="nameIn" class="pinbox nm" maxlength="30" placeholder="Ví dụ: Trà Sữa Nhà Mèo" aria-label="Tên quán"></div>`,1])}
   const n=sl.length;
   sp.innerHTML=`<div class="awning"></div><div class="tour">
     <button class="sp-link skip" id="tSkip">${isNew?'Bỏ qua ›':'Đóng ✕'}</button>
@@ -2443,10 +2444,35 @@ const BAK_SALT='ttn2-bak-v1';
 function bakHash(t){let h=0x811c9dc5;const x=BAK_SALT+t;for(let i=0;i<x.length;i++){h^=x.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 const b64e=u8=>{let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
 const b64d=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
-async function zipBytes(u8,dir){const C=dir?window.CompressionStream:window.DecompressionStream;if(!C)return null;const st=new Blob([u8]).stream().pipeThrough(new C('gzip'));return new Uint8Array(await new Response(st).arrayBuffer())}
+async function zipBytes(u8,dir){const C=dir?window.CompressionStream:window.DecompressionStream;if(!C)return null;let st=new Blob([u8]).stream().pipeThrough(new C('gzip'));
+  if(!dir){let size=0;st=st.pipeThrough(new TransformStream({transform(c,ctl){size+=c.byteLength;if(size>4000000)throw 'Bản sao lưu quá lớn';ctl.enqueue(c)}}))}
+  return new Uint8Array(await new Response(st).arrayBuffer())}
 const plain=x=>x&&typeof x==='object'&&!Array.isArray(x);
-function validSave(d){return plain(d)&&Number.isSafeInteger(d.day)&&d.day>0&&Number.isFinite(d.money)&&plain(d.stock)&&plain(d.sell)&&plain(d.unlocked)&&plain(d.upg)&&plain(d.cur)&&Array.isArray(d.reviews)&&Array.isArray(d.history)&&
-  Object.entries(d.stock).every(([k,bs])=>ITEMS[k]&&Array.isArray(bs)&&bs.every(b=>plain(b)&&Number.isSafeInteger(b.q)&&b.q>=0&&Number.isSafeInteger(b.exp)&&b.exp>=0))}
+const hasOwn=(o,k)=>Object.prototype.hasOwnProperty.call(o,k),saveNum=n=>typeof n==='number'&&Number.isFinite(n)&&Math.abs(n)<=Number.MAX_SAFE_INTEGER;
+function safeSaveTree(x,depth=0){if(depth>12)return false;if(x===null||typeof x==='boolean')return true;if(typeof x==='string')return x.length<=4000;if(typeof x==='number')return saveNum(x);
+  if(Array.isArray(x))return x.length<=2500&&x.every(v=>safeSaveTree(v,depth+1));if(!plain(x)||Object.keys(x).length>500)return false;
+  return Object.entries(x).every(([k,v])=>!['__proto__','prototype','constructor'].includes(k)&&safeSaveTree(v,depth+1))}
+function validRecord(r){const map=m=>plain(m)&&Object.entries(m).every(([k,x])=>hasOwn(ITEMS,k)&&plain(x)&&saveNum(x.q)&&x.q>=0&&saveNum(x.v)&&x.v>=0);
+  return plain(r)&&Number.isSafeInteger(r.day)&&r.day>0&&plain(r.sales)&&Object.entries(r.sales).every(([k,x])=>(k==='L'||hasOwn(ITEMS,k))&&plain(x)&&Number.isSafeInteger(x.q)&&x.q>=0&&saveNum(x.a)&&x.a>=0)&&
+    ['tips','onl','fee','rent','util','tax','served','lost','starSum','starN'].every(k=>saveNum(r[k])&&r[k]>=0)&&plain(r.spoil)&&saveNum(r.spoil.n)&&r.spoil.n>=0&&saveNum(r.spoil.v)&&r.spoil.v>=0&&Array.isArray(r.equip)&&r.equip.length<=100&&r.equip.every(x=>plain(x)&&typeof x.n==='string'&&x.n.length<=100&&saveNum(x.v)&&x.v>=0)&&map(r.ing)&&map(r.waste)&&
+    ['gift','wage','bad','loanInt','loanOut','guard','staffTip','ot'].every(k=>r[k]==null||saveNum(r[k])&&r[k]>=0)}
+function validReview(r){return plain(r)&&Number.isInteger(r.s)&&r.s>=1&&r.s<=5&&typeof r.t==='string'&&r.t.length<=500&&Number.isSafeInteger(r.d)&&r.d>0&&
+  (r.n==null||typeof r.n==='string'&&r.n.length<=100)&&(r.f==null||typeof r.f==='string'&&r.f.length<=40)&&(r.rp==null||typeof r.rp==='string'&&r.rp.length<=200)&&
+  (r.b==null||hasOwn(ITEMS,r.b))&&(r.fl==null||hasOwn(ITEMS,r.fl))&&(r.tp==null||Array.isArray(r.tp)&&r.tp.length<=4&&r.tp.every(k=>hasOwn(ITEMS,k)))&&
+  (r.o==null||typeof r.o==='boolean')&&(r.ch==null||typeof r.ch==='boolean')&&(r.sz==null||r.sz==='M'||r.sz==='L')&&(r.st==null||Number.isSafeInteger(r.st)&&r.st>=0&&r.st<=5)&&(r.tg==null||typeof r.tg==='string'&&r.tg.length<=100)}
+function validSave(d){const boolMap=m=>m==null||plain(m)&&Object.values(m).every(v=>typeof v==='boolean'),validLoan=x=>x==null||plain(x)&&Number.isSafeInteger(x.left)&&x.left>=0&&['pay','int','amt'].every(k=>saveNum(x[k])&&x[k]>=0),countMap=m=>m==null||plain(m)&&Object.entries(m).every(([k,v])=>hasOwn(ITEMS,k)&&Number.isSafeInteger(v)&&v>=0);
+  return plain(d)&&safeSaveTree(d)&&Number.isSafeInteger(d.day)&&d.day>0&&saveNum(d.money)&&plain(d.stock)&&plain(d.sell)&&plain(d.unlocked)&&plain(d.upg)&&plain(d.cur)&&Array.isArray(d.reviews)&&d.reviews.length<=2500&&d.reviews.every(validReview)&&Array.isArray(d.history)&&d.history.length<=400&&d.history.every(validRecord)&&validRecord(d.cur)&&d.cur.day===d.day&&
+  Object.entries(d.stock).every(([k,bs])=>hasOwn(ITEMS,k)&&Array.isArray(bs)&&bs.length<=100&&bs.every(b=>plain(b)&&Number.isSafeInteger(b.q)&&b.q>=0&&Number.isSafeInteger(b.exp)&&b.exp>=0))&&
+  Object.entries(d.sell).every(([k,v])=>hasOwn(DEF_SELL,k)&&saveNum(v)&&v>=0)&&Object.values(d.unlocked).every(v=>typeof v==='boolean')&&Object.values(d.upg).every(v=>typeof v==='boolean')&&
+  ['off','hired','apps'].every(k=>boolMap(d[k]))&&countMap(d.used)&&['served','best','totalRev','yearRev','revTotal','taxYear','bakDay','bakAsk','tablets','bungN'].every(k=>d[k]==null||Number.isSafeInteger(d[k])&&d[k]>=0)&&
+  (d.shopName==null||typeof d.shopName==='string'&&d.shopName.length<=30)&&(d.dayLen==null||[4,5,6].includes(d.dayLen))&&(d.online==null||typeof d.online==='boolean')&&
+  (d.gift==null||plain(d.gift)&&typeof d.gift.n==='string'&&d.gift.n.length<=100&&typeof d.gift.d==='string'&&d.gift.d.length<=300&&saveNum(d.gift.v)&&d.gift.v>=0&&(d.gift.k==null||typeof d.gift.k==='string'&&d.gift.k.length<=40))&&
+  (d.ev==null||plain(d.ev)&&hasOwn(EVS,d.ev.id)&&(d.ev.k==null||hasOwn(ITEMS,d.ev.k)))&&(d.mood==null||d.mood==='kho'||d.mood==='vui')&&
+  (d.moodPlan==null||plain(d.moodPlan)&&Number.isSafeInteger(d.moodPlan.blk)&&d.moodPlan.blk>=0&&Array.isArray(d.moodPlan.days)&&d.moodPlan.days.length===2&&d.moodPlan.days.every(n=>Number.isSafeInteger(n)&&n>0))&&
+  (d.starSch==null||plain(d.starSch)&&Number.isSafeInteger(d.starSch.day)&&d.starSch.day>0&&Number.isSafeInteger(d.starSch.end)&&d.starSch.end>0&&(d.starSch.done==null||typeof d.starSch.done==='boolean'))&&
+  (d.starLast==null||Number.isSafeInteger(d.starLast)&&d.starLast>=0&&d.starLast<STARS.length)&&validLoan(d.loan)&&validLoan(d.hot)&&
+  (d.brand==null||plain(d.brand)&&(d.brand.bg==null||BRAND_BGS.some(x=>x.c===d.brand.bg))&&(d.brand.i==null||BRAND_ICONS.includes(d.brand.i))&&
+    (d.brand.frame==null||BRAND_FRAMES.some(x=>x.id===d.brand.frame))&&(d.brand.nl==null||['line','arc','arcb'].includes(d.brand.nl))&&(d.brand.slogan==null||typeof d.brand.slogan==='string'&&d.brand.slogan.length<=24))}
 async function makeBackup(){const json=JSON.stringify(S),raw=new TextEncoder().encode(json);let z=null;try{z=await zipBytes(raw,1)}catch(e){}
   const body=(z?'z':'p')+b64e(z||raw);return 'TTN2.'+body+'.'+bakHash(body)}
 async function readBackup(code){code=String(code||'').replace(/\s+/g,'');if(code.length>5000000)throw 'Mã quá dài';
@@ -2491,7 +2517,7 @@ function showSettings(){
     <button class="setb" id="sSea"><span>${ico('calendar')}</span>Nhạc theo mùa<small>${AU.season?SEASONS[AU.season].n:'Tự động · '+SEASONS[seasonNow()].n}</small></button>
     <button class="setb" id="sSnd"><span>${ico('pause')}</span>Âm thanh<small>${AU.on?'Đang bật · bấm để tắt':'Đang tắt · bấm để bật'}</small></button>
     <button class="setb" id="sBak"><span>${ico('box')}</span>Sao lưu tiến trình<small>${S.bakDay?'Lần cuối: ngày '+S.bakDay:'Chưa sao lưu'}</small></button>
-    <button class="setb" id="sAuto"><span>${ico('calendar')}</span>Khôi phục bản tự lưu<small>Game tự lưu 3 cuối ngày gần nhất</small></button>
+    <button class="setb" id="sAuto"><span>${ico('calendar')}</span>Khôi phục bản tự lưu<small>Ba bản tự lưu cuối ngày gần nhất</small></button>
     <button class="setb" id="sRes"><span>${ico('reload')}</span>Khôi phục từ mã</button>
     <button class="setb warnb" id="sReset"><span>${ico('reload')}</span>Chơi lại từ đầu</button></div>
     <button class="big" id="sClose" style="margin-top:12px">Đóng</button>`;

@@ -1,56 +1,55 @@
 # Tiệm Trà Nhỏ
 
-Game quản lý tiệm trà sữa bằng tiếng Việt, chạy trực tiếp trên trình duyệt và có thể cài như một ứng dụng web (PWA). Người chơi chuẩn bị nguyên liệu, pha đồ uống theo đơn, phục vụ khách và quản lý doanh thu, chi phí qua từng ngày.
+Game quản lý tiệm trà sữa bằng tiếng Việt, chạy trong trình duyệt và có thể cài như ứng dụng web (PWA). Repo này là nguồn mã chính; game được phục vụ tĩnh, không có máy chủ lưu tiến trình.
 
-Repo này là **bản đồng bộ và chỉnh sửa từ một trang nguồn**, không phải mã nguồn gốc của game. `sync.py` tải bản mới, giải mã phần JavaScript và áp dụng các thay đổi của bản này trước khi triển khai.
+## Chạy trên máy
 
-## Chơi thử trên máy
-
-Không cần `npm install` hay bước build. Từ thư mục repo, chạy một máy chủ tĩnh:
+Không cần cài gói hay build. Từ thư mục repo, chạy:
 
 ```sh
-python3 -m http.server 8000
-# Windows: py -3 -m http.server 8000
+py -3 -m http.server 8000
 ```
 
-Mở `http://localhost:8000/`. Dùng `localhost` thay vì mở `index.html` bằng `file://` để service worker và chức năng offline hoạt động. Trên điện thoại, có thể dùng tính năng **Thêm vào màn hình chính** của trình duyệt sau khi trang được phục vụ qua HTTPS.
+Mở `http://localhost:8000/`. Dùng `localhost` thay vì `file://` để service worker và chế độ offline hoạt động. Trên điện thoại, cài game từ trình duyệt qua HTTPS.
 
 ## Cách chơi
 
-1. Trong **Kho**, chọn số phần nguyên liệu cần nấu hoặc nhập rồi bấm **Nấu & nhập**. Nguyên liệu có hạn dùng; hàng hết hạn sẽ bị bỏ.
-2. Bấm **Mở cửa**. Đọc món, cỡ ly và các yêu cầu trong bóng thoại của khách; vòng quanh mặt khách cho biết thời gian chờ còn lại.
-3. Lấy ly, nhấn giữ hũ trà để rót đến vạch, thêm hương và topping theo đơn. Ở các cấp sau, chọn thêm mức đường và đá. Dán nắp để giao; có thể đổ ly sai và pha lại.
-4. Cuối ngày, xem tổng kết rồi điều chỉnh giá bán, mở món, mua trang bị hoặc thuê nhân viên. Điểm đánh giá ảnh hưởng lượng khách.
+1. Trong **Kho**, chọn số phần nguyên liệu cần nấu rồi bấm **Nấu & nhập**.
+2. Bấm **Mở cửa** và pha đồ uống theo đơn của khách.
+3. Cuối ngày, xem tổng kết rồi điều chỉnh giá, mở món, mua trang bị hoặc thuê nhân viên.
 
-Hướng dẫn trong game nằm ở **Cài đặt → Hướng dẫn**.
+Hướng dẫn đầy đủ nằm ở **Cài đặt → Hướng dẫn**.
 
-## Lưu tiến trình và chơi offline
+## Tiến trình và bản sao lưu
 
-Game lưu tiến trình trong `localStorage` của trình duyệt và giữ các bản dự phòng cuối ngày. Trong **Cài đặt → Sao lưu tiến trình**, người chơi có thể lấy mã dài hoặc tải file để tự giữ. Mã ngắn 8 số sử dụng API sao lưu bên ngoài và cần mạng để tạo hoặc khôi phục; thao tác này gửi dữ liệu tiến trình đến máy chủ của game. Hãy sao lưu trước khi xóa dữ liệu trình duyệt hoặc đổi thiết bị.
+Game tự lưu tiến trình trong `localStorage` trên thiết bị. Giữ ba bản tự lưu cuối ngày và một bản riêng ngay trước lần khôi phục gần nhất. Trong **Cài đặt → Sao lưu tiến trình**, người chơi có thể chép mã TTN2 hoặc xuất file để tự giữ hay chuyển sang thiết bị khác. Tạo và nhập mã hoạt động offline.
 
-`sw.js` lưu giao diện, ảnh và âm thanh để dùng sau khi trang đã tải thành công ít nhất một lần. Khi thay đổi tài nguyên được cache, cập nhật `VERSION` trong `sw.js` để người chơi nhận bản mới.
+Khôi phục kiểm tra bản sao và hiện tên quán, ngày, tiền trước khi thay tiến trình. Bản khôi phục mở ở màn hình chuẩn bị; bản sao không chứa khách, đơn và đồng hồ của ca đang chạy, cũng không chứa cấu hình chủ game, giao diện hay âm thanh. Nếu trình duyệt không ghi được vì hết dung lượng, game giữ tiến trình chính và các bản dự phòng, báo lỗi, cho tiếp tục trong phiên hiện tại và xuất bản sao.
+
+Tiến trình cũ, mã TTN1 và mã 8 số không được hỗ trợ. Game không đọc, chuyển đổi hay xóa các khóa save cũ. Tiến trình lưu theo trình duyệt và origin; để chuyển thiết bị, hãy tự xuất rồi nhập mã TTN2 hoặc file.
+
+`sw.js` cache giao diện, ảnh và âm thanh sau lần tải đầu. Khi thay đổi tài nguyên được cache, tăng `VERSION` trong `sw.js`.
 
 ## Cấu trúc repo
 
 | Đường dẫn | Vai trò |
 | --- | --- |
 | `index.html` | Giao diện, CSS, dữ liệu và logic game. |
-| `sw.js`, `manifest.webmanifest`, `icon-*.png` | Chơi offline và cài PWA. |
+| `sw.js`, `manifest.webmanifest`, `icon-*.png` | Chế độ offline và cài PWA. |
 | `img/`, `snd/` | Hình ảnh và âm thanh. |
-| `sync.py` | Tải và biến đổi phiên bản từ trang nguồn. |
-| `deobf.py`, `decrypted.js`, `test.txt` | Công cụ và dữ liệu phục vụ giải mã; game không tải các file này lúc chạy. |
-| `.github/workflows/` | Đồng bộ tự động và triển khai GitHub Pages. |
+| `test_backup.js` | Kiểm tra hồi quy cho mã TTN2 và khôi phục lỗi. |
+| `.github/workflows/static.yml` | Triển khai tĩnh qua GitHub Pages khi chạy thủ công. |
 
-## Phát triển và triển khai
+## Phát triển và phát hành
 
-`index.html` được `sync.py` ghi lại khi đồng bộ. Nếu chỉnh trực tiếp logic game, hãy kiểm tra liệu thay đổi có cần đưa vào bước biến đổi trong `sync.py` để không bị mất ở lần đồng bộ tiếp theo. Lệnh đồng bộ thủ công là `python3 sync.py` (Windows: `py -3 sync.py`); lệnh này cần mạng và sửa file trong repo. Kiểm tra bản diff trước khi commit.
+Sửa trực tiếp `index.html`; repo này là nguồn mã, không còn quy trình tải hoặc biến đổi từ trang upstream. Chạy kiểm tra hồi quy bằng `node test_backup.js`. Với thay đổi gameplay hoặc lưu tiến trình, kiểm tra trong trình duyệt bằng một ngày chơi, tải lại trang, sao lưu/khôi phục và chế độ offline.
 
-Hai workflow hiện chỉ chạy khi kích hoạt thủ công trong GitHub Actions. **Sync Updates** tải bản nguồn và commit các file thay đổi; **Deploy static content to Pages** triển khai toàn bộ thư mục lên GitHub Pages. Đẩy code không tự kích hoạt hai workflow này trong giai đoạn chuẩn bị phát hành. Repo chưa có test runner hay bước build. Có thể kiểm tra cú pháp Python bằng `python3 -m py_compile sync.py deobf.py`; với thay đổi gameplay, hãy thử thủ công một ngày chơi, tải lại trang, sao lưu/khôi phục và chế độ offline.
+Workflow GitHub Pages chỉ chạy khi kích hoạt thủ công. Đẩy code không tự triển khai website.
 
-## Lưu ý hiện tại
+## Giới hạn
 
-- Phần loại bỏ sự cố trong `sync.py` hiện để `BAD = []`, trong khi logic lên lịch sự cố vẫn dùng mảng này; một số ngày chơi có thể gặp lỗi runtime.
-- Luồng khôi phục hiện ghi bản nhập vào bộ nhớ trình duyệt trước khi xác nhận đọc thành công. Nên giữ mã sao lưu riêng trước khi thử khôi phục dữ liệu không chắc chắn.
-- Repo không có file `LICENSE`; không nên suy đoán quyền sử dụng lại tài nguyên từ repo này.
+- Không có tài khoản hay đồng bộ tự động giữa các thiết bị. Hãy giữ một bản sao ngoài trình duyệt.
+- Game không còn gọi API lưu cũ. Worker và dữ liệu đã gửi lên dịch vụ cũ nằm ngoài repo; thay đổi ở đây không xóa dữ liệu đó hay tắt dịch vụ.
+- Repo không có file `LICENSE`; không nên suy đoán quyền phát hành lại tài nguyên.
 
-Xem [AGENTS.md](AGENTS.md) để biết quy ước đóng góp, [DEPLOYMENT_PLAN.md](DEPLOYMENT_PLAN.md) để xem kế hoạch phát hành và [SAVE_PLAN.md](SAVE_PLAN.md) để xem kế hoạch lưu game độc lập.
+Xem [AGENTS.md](AGENTS.md) về quy ước đóng góp, [DEPLOYMENT_PLAN.md](DEPLOYMENT_PLAN.md) về phát hành và [SAVE_PLAN.md](SAVE_PLAN.md) về quyết định lưu tiến trình.
