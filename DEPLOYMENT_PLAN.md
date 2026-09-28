@@ -35,7 +35,7 @@ Tham chiếu chính: [logic game](index.html), [service worker](sw.js), [sync](s
 - **Repo và quyền triển khai:** đã xác nhận repo private và quyền ADMIN qua GitHub CLI. Người dùng đã cho phép đẩy code; chưa yêu cầu mở công khai site hoặc thay đổi độ hiển thị repo. Cấu hình hosting và tên miền vẫn cần chốt.
 - **Quyền phát hành:** repo tải mã, ảnh và nhạc từ nguồn khác, có bước bỏ kiểm tra hostname và chưa có `LICENSE`. Cần xác nhận quyền phân phối những nội dung này trước khi công khai; ghi công không tự thay thế quyền sử dụng.
 - **Địa chỉ chính thức:** chọn URL ổn định trước khi mời người chơi. Dữ liệu `localStorage` không tự đi theo khi đổi hostname; chuyển địa chỉ cần hướng dẫn xuất/nhập backup. Nếu chưa có domain, có thể dùng URL của nhà cung cấp.
-- **Mã sao lưu 8 số:** mã ngắn để lấy bản tiến trình cất trên máy chủ; khác với mã dài/file chứa sẵn dữ liệu. Người có mã có thể yêu cầu tải bản lưu. API đang trỏ tới Worker bên ngoài; repo không có backend. Chưa xác minh CORS, quyền sử dụng, giới hạn request hoặc thời gian giữ dữ liệu. Nếu cần mã 8 số ngay, xác nhận quyền quản trị API hiện có hoặc lập hạng mục backend riêng. Nếu chưa cần, dùng mã dài/file và bỏ request cloud trong bản beta sau khi chốt lựa chọn.
+- **Sao lưu độc lập:** mã 8 số hiện lấy tiến trình từ Worker bên ngoài; repo không có backend. [SAVE_PLAN.md](SAVE_PLAN.md) so sánh file/mã dài với dịch vụ mã ngắn do chủ game tự quản lý. Chưa chốt lựa chọn của người dùng.
 
 ## 4. Trình tự thực hiện
 
