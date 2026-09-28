@@ -5,19 +5,20 @@ const vm = require('node:vm');
 const html = fs.readFileSync('index.html', 'utf8');
 const backupCode = html.slice(html.indexOf('/* ---------- SAO LƯU / KHÔI PHỤC'), html.indexOf('function showSettings(){'));
 const restoreCode = html.slice(html.indexOf('function restoreStorageError('), html.indexOf('function giftCheck('));
+const autoBakCode = html.slice(html.indexOf('function autoBak(){'), html.indexOf('\nconst newCup'));
 const SAVE = 'ttnShop1';
 const PRE_RESTORE = 'ttnShop1_preRestore';
 const record = day => ({day,sales:{},tips:0,onl:0,fee:0,equip:[],ing:{},waste:{},rent:0,util:0,tax:0,served:0,lost:0,starSum:0,starN:0,spoil:{n:0,v:0}});
 const state = {day:1,money:400000,stock:{},sell:{},upg:{},unlocked:{},reviews:[],history:[],cur:record(1)};
 const store = new Map([[SAVE, JSON.stringify(state)], [PRE_RESTORE, 'older copy']]);
-let deniedKey = null;
+let deniedKey = null, deniedValue = null;
 const ctx = {
   S: state, R: {}, SAVE, PRE_RESTORE, ITEMS: {}, DEF_SELL: {},
   window: { CompressionStream, DecompressionStream },
   Blob, Response, TransformStream, TextEncoder, TextDecoder, Uint8Array, atob, btoa,
   localStorage: {
     getItem: key => store.get(key) ?? null,
-    setItem: (key, value) => { if (key === deniedKey) throw Error('quota'); store.set(key, value); },
+    setItem: (key, value) => { if (key === deniedKey || value === deniedValue) throw Error('quota'); store.set(key, value); },
     removeItem: key => store.delete(key)
   },
   buildSave: d => { if (!ctx.validSave(d)) throw Error('invalid save'); return JSON.parse(JSON.stringify(d)); },
@@ -27,7 +28,7 @@ const ctx = {
   shopName: () => 'Test', document: { title: '' }, timer: null, cup: null, uid: 0
 };
 vm.createContext(ctx);
-vm.runInContext(backupCode + restoreCode, ctx);
+vm.runInContext(backupCode + restoreCode + autoBakCode, ctx);
 
 (async () => {
   assert(!backupCode.includes('workers.dev') && !backupCode.includes('cloudFetch'));
@@ -55,5 +56,15 @@ vm.runInContext(backupCode + restoreCode, ctx);
   assert.equal(JSON.parse(store.get(SAVE)).day, 2, 'quota failure must retain the primary save');
   assert.equal(JSON.parse(store.get(PRE_RESTORE)).day, 1, 'quota failure must retain the previous pre-restore copy');
   assert.equal(ctx.S.day, 2, 'quota failure must retain the active game');
+
+  const bakKeys = ['ttnBak1','ttnBak2','ttnBak3'];
+  bakKeys.forEach((key, i) => store.set(key, `backup-${i + 1}`));
+  const backups = bakKeys.map(key => store.get(key));
+  deniedKey = null;
+  deniedValue = ctx.pack(300);
+  ctx.R.noStore = false;
+  ctx.autoBak();
+  assert.deepEqual(bakKeys.map(key => store.get(key)), backups, 'quota failure must preserve every existing auto backup');
+  assert.equal(ctx.R.noStore, true, 'quota failure must be reported to the session');
   console.log('TTN2 backup and safe restore: OK');
 })().catch(e => { console.error(e); process.exitCode = 1; });

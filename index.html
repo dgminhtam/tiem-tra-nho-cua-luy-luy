@@ -908,8 +908,8 @@ function save(){let js;try{js=pack()}catch(e){R.noStore=true;return}
   try{localStorage.setItem(SAVE,js);R.noStore=false}catch(e){R.noStore=true}}
 /* thử xem máy có cho lưu không */
 function storeOk(){const k=SAVE+'_test';try{localStorage.setItem(k,'1');const ok=localStorage.getItem(k)==='1';localStorage.removeItem(k);return ok}catch(e){return false}}
-function autoBak(){try{const cur=pack(300),b1=localStorage.getItem('ttnBak1'),b2=localStorage.getItem('ttnBak2');
-  if(b2)localStorage.setItem('ttnBak3',b2);if(b1)localStorage.setItem('ttnBak2',b1);localStorage.setItem('ttnBak1',cur)}catch(e){R.noStore=true}}
+function autoBak(){const keys=['ttnBak1','ttnBak2','ttnBak3'];let prev;try{const cur=pack(300);prev=keys.map(k=>localStorage.getItem(k));
+  if(prev[1])localStorage.setItem(keys[2],prev[1]);if(prev[0])localStorage.setItem(keys[1],prev[0]);localStorage.setItem(keys[0],cur)}catch(e){if(prev)try{keys.forEach((k,i)=>prev[i]===null?localStorage.removeItem(k):localStorage.setItem(k,prev[i]))}catch(_){}R.noStore=true}}
 const newCup=()=>({cost:0,size:null,sugar:null,ice:null,base:null,flav:null,tops:[],cheese:false,used:false});
 
 /* ---------- ECONOMY ---------- */
