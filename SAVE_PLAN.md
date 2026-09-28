@@ -4,7 +4,7 @@ Issue #1 implements a new save generation. Progress stays in the browser; player
 
 ## Behavior
 
-- The game stores progress in `localStorage` under the `ttn*` namespace. It does not read, migrate, or delete legacy `ts*` save keys, TTN1 codes, or eight-digit codes. New progress starts from day 1.
+- The game stores progress in `localStorage` under the `ttn*` namespace. It does not read, migrate, or delete legacy `ts*` save keys or eight-digit codes. TTN1 codes are accepted by the restore dialog, validated against the current save schema, and written back as the current save after restore.
 - Saves run throughout play. The game keeps three end-of-day autosaves and one separate copy from immediately before the latest restore.
 - TTN2 codes and text files can be created and restored offline. A restore previews the shop name, day, and money, then opens at preparation without the active customers, orders, or shift clock.
 - Copies contain shop progress only; owner configuration, theme, and audio remain separate. A file download is not counted as kept until the player confirms it; copying the code counts after clipboard copy succeeds.
@@ -18,6 +18,6 @@ Issue #1 implements a new save generation. Progress stays in the browser; player
 
 ## Verification
 
-Run `node test_backup.js` for the TTN2 and restore regression check. Before release, use a browser on a local server to verify a new game and reload, one selling day, TTN2 code and file export/import, cancel and successful restore, rejection of TTN1/eight-digit/corrupt data, three autosaves plus the pre-restore copy, quota failure, and offline reload after caching. Confirm the browser makes no request to the old save API.
+Run `node test_backup.js` for the TTN1/TTN2 and restore regression check. Before release, use a browser on a local server to verify a new game and reload, one selling day, TTN1/TTN2 code and file export/import, cancel and successful restore, rejection of eight-digit/corrupt data, three autosaves plus the pre-restore copy, quota failure, and offline reload after caching. Confirm the browser makes no request to the old save API.
 
-Keep `localStorage` unless measured save size or an observed quota failure shows it no longer fits. Progress remains local to the browser and origin; players must use TTN2 files or codes to move it between devices.
+Keep `localStorage` unless measured save size or an observed quota failure shows it no longer fits. Progress remains local to the browser and origin; players can use TTN1 or TTN2 files/codes to move it between devices.

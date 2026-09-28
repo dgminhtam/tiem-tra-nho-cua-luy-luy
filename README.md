@@ -26,7 +26,7 @@ Game tự lưu tiến trình trong `localStorage` trên thiết bị. Giữ ba b
 
 Khôi phục kiểm tra bản sao và hiện tên quán, ngày, tiền trước khi thay tiến trình. Bản khôi phục mở ở màn hình chuẩn bị; bản sao không chứa khách, đơn và đồng hồ của ca đang chạy, cũng không chứa cấu hình chủ game, giao diện hay âm thanh. Nếu trình duyệt không ghi được vì hết dung lượng, game giữ tiến trình chính và các bản dự phòng, báo lỗi, cho tiếp tục trong phiên hiện tại và xuất bản sao.
 
-Tiến trình cũ, mã TTN1 và mã 8 số không được hỗ trợ. Game không đọc, chuyển đổi hay xóa các khóa save cũ. Tiến trình lưu theo trình duyệt và origin; để chuyển thiết bị, hãy tự xuất rồi nhập mã TTN2 hoặc file.
+Mã TTN1 cũ được đọc và kiểm tra lại theo schema hiện tại trước khi khôi phục; mã 8 số và các khóa save cũ không được hỗ trợ. Tiến trình lưu theo trình duyệt và origin; để chuyển thiết bị, hãy xuất rồi nhập mã TTN1 hoặc TTN2.
 
 `sw.js` cache giao diện, ảnh và âm thanh sau lần tải đầu. Khi thay đổi tài nguyên được cache, tăng `VERSION` trong `sw.js`.
 

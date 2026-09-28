@@ -765,8 +765,8 @@ const N_NICK=['Bé Na','Bơ','Mít','Sữa','Su Su','Bin','Tôm','Cún','Mèo Mu
 function genName(){return uniqName(()=>Math.random()<.5?rnd(NM_HO)+' '+rnd(NM_NU):rnd(NM_HO)+' '+rnd(NM_NAM))}
 const SAVE='ttnShop1', OWNER_SAVE='ttnOwner1', PRE_RESTORE='ttnShop1_preRestore';
 /* ===== PHIÊN BẢN GAME: mỗi lần cập nhật, tăng số và thêm một mục lên ĐẦU danh sách ===== */
-const GAME_VERSION='1.1';
-const CHANGELOG=[{v:'1.1',d:'28/09/2026',items:['Khôi phục an toàn hơn, có bản riêng trước khi khôi phục','Tiến trình cũ, mã TTN1 và mã 8 số không còn được hỗ trợ']},{v:'1.0',d:'28/09/2026',items:['Bản game độc lập: tiến trình lưu trên thiết bị','Sao lưu và khôi phục bằng file hoặc mã dài, không cần mạng']}];
+const GAME_VERSION='1.2';
+const CHANGELOG=[{v:'1.2',d:'28/09/2026',items:['Có thể chuyển mã sao lưu TTN1 sang phiên bản hiện tại']},{v:'1.1',d:'28/09/2026',items:['Khôi phục an toàn hơn, có bản riêng trước khi khôi phục']},{v:'1.0',d:'28/09/2026',items:['Bản game độc lập: tiến trình lưu trên thiết bị','Sao lưu và khôi phục bằng file hoặc mã dài, không cần mạng']}];
 /* ===== CẤU HÌNH CỦA CHỦ GAME (người chơi không chỉnh được) ===== */
 const DEFAULT_CONFIG={
   ownerPin:'2468',          // mã vào bảng chủ game
@@ -1170,7 +1170,7 @@ function renderPrep(){
 }
 function refreshPrep(board){if(board){const b=document.querySelector('.board'),sg=document.querySelector('.sign');if(b&&sg){const t=document.createElement('div');t.innerHTML=menuBoard();sg.replaceWith(t.querySelector('.sign'));b.replaceWith(t.querySelector('.board'));$('rename').onclick=renameDlg;bindBoard()}}
   ({kho:paneKho,nangcap:paneUpg,gia:paneGia,danhgia:paneRev,tongket:paneSum})[R.tab]();renderObar();head()}
-function obarHTML(){const t=planTotal();return t?`<button class="big" id="cook" ${t>S.money?'disabled':''}>${t>S.money?'Không đủ tiền · ':'Nấu & nhập · '}${fmt(t)}</button>`:(missingPrep().length?`<button class="big blocked" id="open">${ico('warn')} Chưa nấu ${missingPrep().map(m=>m[0]).join(' · ')}</button>`:`<button class="big" id="open">Mở cửa ngày ${S.day}</button>`)}
+function obarHTML(){const t=planTotal();return t?`<button class="big" id="cook" ${t>S.money?'disabled':''}>${t>S.money?'Không đủ tiền · ':'Nấu & nhập · '}${fmt(t)}</button>`:(missingPrep().length?`<button class="big blocked" id="open">${ico('warn')} Chưa nấu ${missingPrep().map(m=>ico(['teapot','pearlbowl','cupempty'][m[1]])+' '+m[0]).join(' · ')}</button>`:`<button class="big" id="open">Mở cửa ngày ${S.day}</button>`)}
 function renderObar(force){const b=$('obar');if(!b)return;const h=obarHTML();if(!force&&b._h===h)return;
   const old=b.firstElementChild,t=document.createElement('div');t.innerHTML=h;const n=t.firstElementChild;
   if(!force&&old&&old.id===n.id&&old.className===n.className&&!n.querySelector('img')){old.textContent=n.textContent;old.disabled=n.disabled}else{b.innerHTML=h}
@@ -1208,10 +1208,10 @@ function paneKho(){
 function cook(){const t=planTotal();if(t>S.money)return toast('Không đủ tiền, bớt số lượng lại nhé');
   S.money-=t;Object.entries(R.plan).forEach(([k,q])=>{if(!q)return;addStock(k,q);const g=S.cur.ing[k]=S.cur.ing[k]||{q:0,v:0};g.q+=q;g.v+=q*ecost(k)});R.plan={};save();toast('Đã nấu xong, sẵn sàng mở cửa');refreshPrep()}
 function missingPrep(){const has=ks=>ks.some(k=>S.unlocked[k]&&qty(k)>0);
-  return [!has(BASE_KEYS)&&[ico('teapot')+' Trà',0],!has(TOP_KEYS)&&[ico('pearlbowl')+' Topping',2],!qty('cup')&&[ico('cupempty')+' Ly',3]].filter(Boolean)}
+  return [!has(BASE_KEYS)&&['Trà',0],!has(TOP_KEYS)&&['Topping',1],!qty('cup')&&['Ly',2]].filter(Boolean)}
 function tryOpen(){
   const miss=missingPrep();
-  if(miss.length){R.tab='kho';R.sub=R.sub||{};R.sub.kho=miss[0][1];renderPrep();toast(ico('warn')+' Chưa nấu: '+miss.map(m=>m[0]).join(', '));return}
+  if(miss.length){R.tab='kho';R.sub=R.sub||{};R.sub.kho=miss[0][1];renderPrep();toast('⚠️ Chưa nấu: '+miss.map(m=>m[0]).join(', '));return}
   startDay();
 }
 function paneUpg(){
@@ -2418,7 +2418,7 @@ function tourSlides(){
 }
 function showTour(isNew,fromGame,after){
   const sp=$('splash'),sl=tourSlides();
-  if(isNew){sl.unshift(['Tiến trình mới','Bản game cũ, mã TTN1 và mã 8 số không thể khôi phục. Hãy giữ mã TTN2 hoặc file sao lưu để chuyển quán sang máy khác.','']);
+  if(isNew){sl.unshift(['Tiến trình mới','Bạn có thể khôi phục mã TTN1 hoặc TTN2 trong Cài đặt > Khôi phục từ mã. Hãy giữ mã sao lưu để chuyển quán sang máy khác.','']);
     sl.push(['Đặt tên quán','',`<div class="till"><div style="text-align:center"><img class="ico" src="img/ic_cupfull.png" alt="" style="width:64px;height:64px"></div><input id="nameIn" class="pinbox nm" maxlength="30" placeholder="Ví dụ: Trà Sữa Nhà Mèo" aria-label="Tên quán"></div>`,1])}
   const n=sl.length;
   sp.innerHTML=`<div class="awning"></div><div class="tour">
@@ -2440,8 +2440,8 @@ function showTour(isNew,fromGame,after){
 }
 
 /* ---------- SAO LƯU / KHÔI PHỤC TRÊN THIẾT BỊ ---------- */
-const BAK_SALT='ttn2-bak-v1';
-function bakHash(t){let h=0x811c9dc5;const x=BAK_SALT+t;for(let i=0;i<x.length;i++){h^=x.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
+const BAK_SALT='ttn2-bak-v1', LEGACY_BAK_SALT='ttn-bak-7f3a';
+function bakHash(t,salt=BAK_SALT){let h=0x811c9dc5;const x=salt+t;for(let i=0;i<x.length;i++){h^=x.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return h.toString(36)}
 const b64e=u8=>{let s='';for(let i=0;i<u8.length;i+=0x8000)s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')};
 const b64d=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const s=atob(t),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
 async function zipBytes(u8,dir){const C=dir?window.CompressionStream:window.DecompressionStream;if(!C)return null;let st=new Blob([u8]).stream().pipeThrough(new C('gzip'));
@@ -2459,7 +2459,7 @@ function validRecord(r){const map=m=>plain(m)&&Object.entries(m).every(([k,x])=>
 function validReview(r){return plain(r)&&Number.isInteger(r.s)&&r.s>=1&&r.s<=5&&typeof r.t==='string'&&r.t.length<=500&&Number.isSafeInteger(r.d)&&r.d>0&&
   (r.n==null||typeof r.n==='string'&&r.n.length<=100)&&(r.f==null||typeof r.f==='string'&&r.f.length<=40)&&(r.rp==null||typeof r.rp==='string'&&r.rp.length<=200)&&
   (r.b==null||hasOwn(ITEMS,r.b))&&(r.fl==null||hasOwn(ITEMS,r.fl))&&(r.tp==null||Array.isArray(r.tp)&&r.tp.length<=4&&r.tp.every(k=>hasOwn(ITEMS,k)))&&
-  (r.o==null||typeof r.o==='boolean')&&(r.ch==null||typeof r.ch==='boolean')&&(r.sz==null||r.sz==='M'||r.sz==='L')&&(r.st==null||Number.isSafeInteger(r.st)&&r.st>=0&&r.st<=5)&&(r.tg==null||typeof r.tg==='string'&&r.tg.length<=100)}
+  (r.o==null||typeof r.o==='boolean')&&(r.ch==null||typeof r.ch==='boolean')&&(r.sz==null||r.sz==='M'||r.sz==='L')&&(r.st==null||Number.isSafeInteger(r.st)&&r.st>=0&&r.st<STARS.length)&&(r.tg==null||typeof r.tg==='string'&&r.tg.length<=100)}
 function validSave(d){const boolMap=m=>m==null||plain(m)&&Object.values(m).every(v=>typeof v==='boolean'),validLoan=x=>x==null||plain(x)&&Number.isSafeInteger(x.left)&&x.left>=0&&['pay','int','amt'].every(k=>saveNum(x[k])&&x[k]>=0),countMap=m=>m==null||plain(m)&&Object.entries(m).every(([k,v])=>hasOwn(ITEMS,k)&&Number.isSafeInteger(v)&&v>=0);
   return plain(d)&&safeSaveTree(d)&&Number.isSafeInteger(d.day)&&d.day>0&&saveNum(d.money)&&plain(d.stock)&&plain(d.sell)&&plain(d.unlocked)&&plain(d.upg)&&plain(d.cur)&&Array.isArray(d.reviews)&&d.reviews.length<=2500&&d.reviews.every(validReview)&&Array.isArray(d.history)&&d.history.length<=400&&d.history.every(validRecord)&&validRecord(d.cur)&&d.cur.day===d.day&&
   Object.entries(d.stock).every(([k,bs])=>hasOwn(ITEMS,k)&&Array.isArray(bs)&&bs.length<=100&&bs.every(b=>plain(b)&&Number.isSafeInteger(b.q)&&b.q>=0&&Number.isSafeInteger(b.exp)&&b.exp>=0))&&
@@ -2476,8 +2476,8 @@ function validSave(d){const boolMap=m=>m==null||plain(m)&&Object.values(m).every
 async function makeBackup(){const json=JSON.stringify(S),raw=new TextEncoder().encode(json);let z=null;try{z=await zipBytes(raw,1)}catch(e){}
   const body=(z?'z':'p')+b64e(z||raw);return 'TTN2.'+body+'.'+bakHash(body)}
 async function readBackup(code){code=String(code||'').replace(/\s+/g,'');if(code.length>5000000)throw 'Mã quá dài';
-  const m=code.match(/^TTN2\.([zp][A-Za-z0-9_-]+)\.([0-9a-z]+)$/);if(!m)throw 'Mã không đúng định dạng';
-  if(bakHash(m[1])!==m[2])throw 'Mã bị sai hoặc đã bị sửa';let u=b64d(m[1].slice(1));if(m[1][0]==='z'){u=await zipBytes(u,0);if(!u)throw 'Trình duyệt này quá cũ để đọc mã, thử Chrome hoặc Safari mới hơn'}
+  const m=code.match(/^(TTN2|TTN1)\.([zp][A-Za-z0-9_-]+)\.([0-9a-z]+)$/);if(!m)throw 'Mã không đúng định dạng';
+  const salt=m[1]==='TTN1'?LEGACY_BAK_SALT:BAK_SALT;if(bakHash(m[2],salt)!==m[3])throw 'Mã bị sai hoặc đã bị sửa';let u=b64d(m[2].slice(1));if(m[2][0]==='z'){u=await zipBytes(u,0);if(!u)throw 'Trình duyệt này quá cũ để đọc mã, thử Chrome hoặc Safari mới hơn'}
   const d=JSON.parse(new TextDecoder().decode(u));if(!validSave(d))throw 'Bản sao lưu không có dữ liệu game hợp lệ';return d}
 function markBackup(){S.bakDay=S.day;save()}
 async function backupDlg(){$('card').onchange=null;
@@ -2496,7 +2496,7 @@ async function backupDlg(){$('card').onchange=null;
   $('bkKept').onclick=()=>{markBackup();showSettings()};$('bkClose').onclick=showSettings}
 function restoreDlg(msg){$('card').onchange=null;
   $('card').innerHTML=`<h2>Khôi phục tiến trình</h2><p>Dán mã sao lưu của bản game này hoặc chọn file đã lưu.</p>${msg?`<p class="warnline"><b>${esc(msg)}</b></p>`:''}
-    <textarea id="rsCode" class="rpin" placeholder="TTN2…" style="min-height:90px;font-size:12px!important;word-break:break-all"></textarea>
+    <textarea id="rsCode" class="rpin" placeholder="TTN2… hoặc TTN1…" style="min-height:90px;font-size:12px!important;word-break:break-all"></textarea>
     <div class="sndrow"><label class="sbtn ghost" style="display:flex;align-items:center;justify-content:center;cursor:pointer">Chọn file<input type="file" id="rsFile" accept=".txt,text/plain" hidden></label></div>
     <div class="askbtns"><button class="big" id="rsGo">Khôi phục</button><button class="sbtn ghost" id="rsBack">Quay lại</button></div>`;
   $('modal').hidden=false;

@@ -13,7 +13,7 @@ const state = {day:1,money:400000,stock:{},sell:{},upg:{},unlocked:{},reviews:[]
 const store = new Map([[SAVE, JSON.stringify(state)], [PRE_RESTORE, 'older copy']]);
 let deniedKey = null, deniedValue = null;
 const ctx = {
-  S: state, R: {}, SAVE, PRE_RESTORE, ITEMS: {}, DEF_SELL: {},
+  S: state, R: {}, SAVE, PRE_RESTORE, ITEMS: {}, DEF_SELL: {}, STARS: Array.from({ length: 10 }),
   window: { CompressionStream, DecompressionStream },
   Blob, Response, TransformStream, TextEncoder, TextDecoder, Uint8Array, atob, btoa,
   localStorage: {
@@ -35,7 +35,16 @@ vm.runInContext(backupCode + restoreCode + autoBakCode, ctx);
   const code = await ctx.makeBackup();
   assert.match(code, /^TTN2\./);
   assert.equal((await ctx.readBackup(code)).day, 1);
-  await assert.rejects(ctx.readBackup(code.replace('TTN2.', 'TTN1.')));
+  const body = code.split('.')[1];
+  const legacyHash = text => {
+    let h = 0x811c9dc5;
+    for (const c of 'ttn-bak-7f3a' + text) { h ^= c.charCodeAt(0); h = Math.imul(h, 0x01000193) >>> 0; }
+    return h.toString(36);
+  };
+  const legacy = `TTN1.${body}.${legacyHash(body)}`;
+  assert.equal((await ctx.readBackup(legacy)).day, 1);
+  await assert.rejects(ctx.readBackup(`TTN1.${body}.bad`));
+  assert.equal(ctx.validSave({ ...state, reviews: [{ s: 5, t: 'star', d: 1, st: 9 }] }), true);
   await assert.rejects(ctx.readBackup('12345678'));
 
   const bad = { ...state, cur: { ...state.cur, sales: 'bad' } };
@@ -66,5 +75,5 @@ vm.runInContext(backupCode + restoreCode + autoBakCode, ctx);
   ctx.autoBak();
   assert.deepEqual(bakKeys.map(key => store.get(key)), backups, 'quota failure must preserve every existing auto backup');
   assert.equal(ctx.R.noStore, true, 'quota failure must be reported to the session');
-  console.log('TTN2 backup and safe restore: OK');
+  console.log('TTN1/TTN2 backup and safe restore: OK');
 })().catch(e => { console.error(e); process.exitCode = 1; });
