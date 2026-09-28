@@ -1,6 +1,6 @@
 # Kế hoạch lưu và khôi phục tiến trình độc lập
 
-Khảo sát ngày 28/09/2026. Mục tiêu: không còn gọi API sao lưu `tiemtranho-api.trongnhi110266.workers.dev`. Chưa thay đổi mã game hoặc tạo dịch vụ sao lưu.
+Khảo sát ngày 28/09/2026. **Đã chốt cách A làm hướng chính:** tiến trình lưu trong trình duyệt, người chơi tự xuất/nhập file hoặc mã dài. Mục tiêu: không còn gọi API sao lưu `tiemtranho-api.trongnhi110266.workers.dev`. Chưa thay đổi mã game.
 
 ## Hiện trạng
 
@@ -18,9 +18,9 @@ Trình duyệt thường giới hạn `localStorage` khoảng 5 MiB cho mỗi or
 | **A. Lưu trên máy + file/mã dài** | Tạo bản sao lưu, chép file hoặc mã sang máy khác rồi nhập. Dùng được offline. | Không có backend; chỉ sửa UI và luồng khôi phục. Người chơi phải tự giữ bản sao lưu. |
 | **B. A + mã ngắn của riêng game** | Sao lưu thủ công, nhận một mã khoảng 16 ký tự; nhập mã ở máy khác để lấy tiến trình. File vẫn là dự phòng. | Cloudflare Pages Function và D1 trong tài khoản do chủ game quản lý; cần mạng cho mã ngắn. |
 
-**Đề xuất:** giữ cách A trong mọi trường hợp. Nếu cần sự tiện lợi của mã ngắn, thêm B sau khi sửa tính an toàn của khôi phục. Không chuyển toàn bộ lưu chơi sang server: game vẫn chạy và lưu tại máy khi mất mạng. Cả hai cách bỏ phụ thuộc vào API của trang nguồn.
+**Quyết định:** triển khai A. File/mã dài do trình duyệt tạo và đọc, không cần máy chủ lưu game hay mạng khi sao lưu/khôi phục. Website vẫn cần hosting để tải lần đầu và nhận cập nhật; bản PWA có đủ file đã cache có thể mở offline. Người chơi phải giữ file hoặc mã đã xuất, vì xóa dữ liệu trình duyệt cũng xóa save trên máy. B là lựa chọn mở rộng sau này, chưa nằm trong phạm vi triển khai A.
 
-## Thiết kế tối thiểu cho cách B
+## Phương án B để tham khảo sau này
 
 1. Dùng Pages Function cùng origin với game (`POST /api/save`, `POST /api/load`), gắn một cơ sở D1. Cloudflare hỗ trợ [D1 binding cho Pages Functions](https://developers.cloudflare.com/pages/functions/bindings/), nên không cần gọi API qua origin khác hoặc cấu hình CORS.
 2. Mỗi bản lưu có mã ngẫu nhiên ít nhất 80 bit, ví dụ 16 ký tự từ bảng 32 ký tự dễ đọc. Mã là quyền truy cập bản lưu: ai có mã sẽ đọc được và có thể cập nhật tiến trình. Mã 8 chữ số hiện tại chỉ có khoảng 26,6 bit; không giữ độ dài này cho dịch vụ công khai nếu thiếu lớp xác thực khác.
@@ -32,12 +32,12 @@ D1 Free hiện có giới hạn 500 MB cho một database, 2 MB cho một row, 5
 
 Workers KV đơn giản cho key/value nhưng có thể mất 60 giây hoặc hơn để thay đổi xuất hiện ở vùng khác; điều đó không phù hợp kỳ vọng sao lưu xong rồi khôi phục ngay trên thiết bị khác. Nguồn: [Cloudflare KV consistency](https://developers.cloudflare.com/kv/concepts/how-kv-works/).
 
-## Trình tự và tiêu chí chấp nhận
+## Trình tự triển khai cách A và tiêu chí chấp nhận
 
 1. Đo kích thước `tsShop2`, ba bản dự phòng và mã nén tại ngày đầu, một mốc chơi dài và gần giới hạn đánh giá. Nếu có lỗi quota thật, cân nhắc IndexedDB riêng; không chuyển sớm chỉ vì có API mới.
 2. Sửa `applyRestore()`/`loadFrom()` theo hướng kiểm tra và dựng trạng thái trước khi ghi; kiểm tra bản hợp lệ, thiếu trường, sai kiểu và bản bị sửa. Bản hiện có phải sống sót sau mọi lần nhập lỗi.
-3. Tách UI sao lưu khỏi API trang nguồn. Với A, nút sao lưu tạo file/mã dài và chỉ cập nhật ngày sao lưu sau khi tạo thành công. Với B, thêm API của chủ game và chỉ báo thành công sau khi server xác nhận.
-4. Thử offline, hết quota, tắt tab giữa lúc lưu, hai thiết bị dùng cùng mã, lỗi 409, API không phản hồi, phiên bản game mới đọc save cũ và đổi domain bằng file/mã dài.
-5. Chỉ triển khai API công khai sau khi kiểm thử và xác nhận quyền quản lý tài khoản Cloudflare. Giữ bản export độc lập để người chơi không bị khóa vào dịch vụ này.
+3. Bỏ `CLOUD`, `cloudFetch`, `cloudSave`, `cloudLoad` và UI mã 8 số khỏi luồng sao lưu/khôi phục. Nút sao lưu hiển thị mã dài và tùy chọn chép/lưu file ngay; không chờ request mạng. Chỉ cập nhật `bakDay` khi chép mã thành công hoặc người chơi xác nhận đã giữ file; thao tác bắt đầu tải file không chứng minh file đã được giữ. Nếu không thể ghi `localStorage`, vẫn cho người chơi lấy bản xuất và nhắc họ giữ nó ngoài trình duyệt.
+4. Giữ `TTN1` và cách nhập file/mã dài để các bản đã xuất vẫn dùng được. Mã 8 số cũ không thể khôi phục sau khi bỏ API: trước khi cập nhật, người chỉ có mã 8 số cần khôi phục qua bản cũ rồi xuất file/mã dài. Hiển thị hướng dẫn chuyển đổi này cho người chơi trong giai đoạn cập nhật.
+5. Thử tạo/khôi phục file và mã dài khi offline, hết quota, mã lỗi, tắt tab giữa thao tác và khi đổi domain. Xác nhận không có request đến API cũ bằng DevTools Network; save cũ trên cùng origin vẫn tải được.
 
-**Cần chốt:** người chơi chỉ cần file/mã dài, cần mã ngắn, hay cần cả hai. Nếu cần mã ngắn, cần quyền truy cập tài khoản Cloudflare phục vụ game và chính sách giữ/xóa bản lưu trên máy chủ.
+**Giới hạn đã chấp nhận:** không có đồng bộ tự động giữa thiết bị; khôi phục trên máy khác cần chuyển file hoặc mã dài bằng cách người chơi tự chọn. Không phát sinh chi phí hoặc tài khoản máy chủ dành riêng cho dữ liệu save.

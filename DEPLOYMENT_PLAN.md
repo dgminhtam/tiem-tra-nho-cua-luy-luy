@@ -6,7 +6,7 @@ Khảo sát ngày 28/09/2026. Đây là kế hoạch đề xuất; chưa triển
 
 Repo được chỉ định là [dgminhtam/tiem-tra-nho-cua-luy-luy](https://github.com/dgminhtam/tiem-tra-nho-cua-luy-luy), hiện private và chưa có commit tại thời điểm kiểm tra trước khi nhập mã. Đề xuất **Cloudflare Pages Free** nếu giữ repo private và muốn hosting miễn phí. **GitHub Pages** tận dụng được workflow có sẵn nếu tài khoản có gói hỗ trợ repo private hoặc người dùng chủ động chọn công khai repo; chưa xác minh gói tài khoản.
 
-Game chạy hoàn toàn phía trình duyệt nên phần chơi cơ bản không cần máy chủ ứng dụng hay cơ sở dữ liệu. Mã sao lưu 8 số đang chờ người dùng quyết định sau khi được giải thích; chưa chốt việc tắt hoặc thay API hiện có. Mã dài/file là phương án dự phòng sẵn có.
+Game chạy hoàn toàn phía trình duyệt nên phần chơi cơ bản không cần máy chủ ứng dụng hay cơ sở dữ liệu. Người dùng đã chốt lưu tại máy và xuất/nhập file hoặc mã dài làm hướng chính; cần bỏ API mã 8 số hiện có trước khi phát hành. Xem [SAVE_PLAN.md](SAVE_PLAN.md).
 
 Bộ file duy nhất được liệt kê trong cache hiện có 121 file, tổng khoảng 6,32 MiB; file lớn nhất khoảng 0,46 MiB. Đây là dung lượng file trên đĩa, chưa phải số đo tải mạng thực tế.
 
@@ -35,11 +35,11 @@ Tham chiếu chính: [logic game](index.html), [service worker](sw.js), [sync](s
 - **Repo và quyền triển khai:** đã xác nhận repo private và quyền ADMIN qua GitHub CLI. Người dùng đã cho phép đẩy code; chưa yêu cầu mở công khai site hoặc thay đổi độ hiển thị repo. Cấu hình hosting và tên miền vẫn cần chốt.
 - **Quyền phát hành:** repo tải mã, ảnh và nhạc từ nguồn khác, có bước bỏ kiểm tra hostname và chưa có `LICENSE`. Cần xác nhận quyền phân phối những nội dung này trước khi công khai; ghi công không tự thay thế quyền sử dụng.
 - **Địa chỉ chính thức:** chọn URL ổn định trước khi mời người chơi. Dữ liệu `localStorage` không tự đi theo khi đổi hostname; chuyển địa chỉ cần hướng dẫn xuất/nhập backup. Nếu chưa có domain, có thể dùng URL của nhà cung cấp.
-- **Sao lưu độc lập:** mã 8 số hiện lấy tiến trình từ Worker bên ngoài; repo không có backend. [SAVE_PLAN.md](SAVE_PLAN.md) so sánh file/mã dài với dịch vụ mã ngắn do chủ game tự quản lý. Chưa chốt lựa chọn của người dùng.
+- **Sao lưu độc lập:** đã chốt cách A trong [SAVE_PLAN.md](SAVE_PLAN.md). Cần sửa UI hiện vẫn gọi Worker ngoài trước khi hiện mã dài, đồng thời hướng dẫn người chỉ giữ mã 8 số cũ khôi phục và xuất file/mã dài trước khi bỏ API.
 
 ## 4. Trình tự thực hiện
 
-1. **Chốt nguồn phát hành:** xác định repo, URL, quyền sử dụng tài nguyên và lựa chọn sao lưu. Giữ bản snapshot trước khi sửa.
+1. **Chốt nguồn phát hành:** xác định URL và quyền sử dụng tài nguyên. Phương án sao lưu A đã chốt; giữ bản snapshot trước khi sửa.
 2. **Sửa các lỗi chặn phát hành:** xử lý sự cố, restore và dữ liệu nhập; thêm kiểm tra hồi quy nhỏ cho từng lỗi thực tế. Giữ nguyên kiến trúc HTML/CSS/JS hiện tại.
 3. **Chuẩn bị gói web:** tạo thư mục đầu ra chỉ chứa `index.html`, `sw.js`, manifest, icon, ảnh, âm thanh và font cần dùng. Kiểm tra mọi đường dẫn cache tồn tại. Nếu tự phục vụ font, đổi tham chiếu hiện đang gọi Google Fonts và đưa font vào cache.
 4. **Sửa CI:** kiểm tra cú pháp JavaScript lấy trực tiếp từ `index.html`, cú pháp Python, file tài nguyên và các kiểm tra hồi quy. Đóng gói và deploy đúng commit đã kiểm tra. Với Cloudflare, kết nối repo private và đặt bước kiểm tra trước đóng gói; dùng thư mục đầu ra làm publish directory. Với GitHub Pages, thêm job kiểm tra trước deploy. Giữ sync tách khỏi phát hành.
