@@ -53,4 +53,4 @@ Hai workflow hiện chỉ chạy khi kích hoạt thủ công trong GitHub Actio
 - Luồng khôi phục hiện ghi bản nhập vào bộ nhớ trình duyệt trước khi xác nhận đọc thành công. Nên giữ mã sao lưu riêng trước khi thử khôi phục dữ liệu không chắc chắn.
 - Repo không có file `LICENSE`; không nên suy đoán quyền sử dụng lại tài nguyên từ repo này.
 
-Xem [AGENTS.md](AGENTS.md) để biết quy ước đóng góp, [DEPLOYMENT_PLAN.md](DEPLOYMENT_PLAN.md) để xem kế hoạch phát hành và [SAVE_PLAN.md](SAVE_PLAN.md) để xem các phương án lưu game độc lập.
+Xem [AGENTS.md](AGENTS.md) để biết quy ước đóng góp, [DEPLOYMENT_PLAN.md](DEPLOYMENT_PLAN.md) để xem kế hoạch phát hành và [SAVE_PLAN.md](SAVE_PLAN.md) để xem kế hoạch lưu game độc lập.
