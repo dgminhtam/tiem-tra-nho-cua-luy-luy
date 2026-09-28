@@ -2543,6 +2543,6 @@ const had=load();if(S.sell.L>CFG.sizeCap)S.sell.L=CFG.sizeCap;R.today={stars:[]}
 let _lastVer=null;try{_lastVer=localStorage.getItem('ttnVer1');localStorage.setItem('ttnVer1',GAME_VERSION)}catch(e){}
 showSplash(had,()=>{if(had&&_lastVer!==GAME_VERSION)showNews(true)});
 </script>
-<script>if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{}))}</script>
+<script>if("serviceWorker" in navigator){let swReloading=false,swUpdatePending=false,hadController=!!navigator.serviceWorker.controller;const reloadForUpdate=()=>{if(swReloading)return;const busy=typeof R!=='undefined'&&(R.running||Object.values(R.plan||{}).some(Boolean)||!$('modal').hidden||!$('splash').hidden);if(busy){if(swUpdatePending)return;swUpdatePending=true;toast('Đã có bản cập nhật, sẽ áp dụng sau khi hoàn tất thao tác',5000,1);const wait=()=>{const pending=R.running||Object.values(R.plan||{}).some(Boolean)||!$('modal').hidden||!$('splash').hidden;pending?setTimeout(wait,1000):(swReloading=true,location.reload())};wait();return}swReloading=true;location.reload()};navigator.serviceWorker.addEventListener("controllerchange",()=>{if(hadController)reloadForUpdate()});addEventListener("load",()=>navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{}))}</script>
 </body>
 </html>
