@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="color-scheme" content="only light">
-<title>Tiệm Trà Nhỏ</title>
+<title>Tiệm trà nhỏ của Luy Luy</title>
 <meta name="theme-color" content="#fdf3e4">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Tiệm Trà Nhỏ">
+<meta name="apple-mobile-web-app-title" content="Tiệm trà nhỏ của Luy Luy">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <style>
@@ -497,7 +497,7 @@ body.selling .gear{display:none}
 @keyframes spcloud{from{transform:translateX(-200px)}to{transform:translateX(900px)}}
 .sp4-z{position:absolute;left:470px;top:690px;font-weight:800;font-size:30px;color:#8a6f58;opacity:0;animation:spz 3s ease-out infinite}
 @keyframes spz{0%{opacity:0;transform:translate(0,0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translate(46px,-80px) scale(1.2)}}
-.sp4-t{position:absolute;left:0;right:0;top:548px;margin:0;text-align:center;font-size:72px;font-weight:800;line-height:1;color:#4a3526;white-space:nowrap;letter-spacing:.01em;
+.sp4-t{position:absolute;left:0;right:0;top:548px;margin:0;text-align:center;font-size:64px;font-weight:800;line-height:1;color:#4a3526;white-space:nowrap;letter-spacing:.01em;
   text-shadow:0 4px 0 #fff8ee,4px 0 0 #fff8ee,-4px 0 0 #fff8ee,0 -4px 0 #fff8ee,3px 3px 0 #fff8ee,-3px 3px 0 #fff8ee,3px -3px 0 #fff8ee,-3px -3px 0 #fff8ee,0 8px 12px rgba(90,60,30,.25)}
 .sp4-head{position:absolute;left:446px;top:684px;width:83px;height:77px;transform-origin:41px 68px;animation:sphead 4.2s ease-in-out infinite}
 @keyframes sphead{0%,40%,100%{transform:rotate(0)}48%{transform:rotate(-5deg)}56%{transform:rotate(3deg)}63%{transform:rotate(-3deg)}70%{transform:rotate(2deg)}78%{transform:rotate(0) translateY(1px)}}
@@ -1010,7 +1010,7 @@ function bakRemind(){if(R.noStore||S.day<8||S.day-(S.bakDay||0)<7||S.day-(S.bakA
 function autoRestoreDlg(){$('card').onchange=null;
   const list=[['ttnBak1','Cuối ngày gần nhất'],['ttnBak2','Một ngày trước đó'],['ttnBak3','Hai ngày trước đó'],[PRE_RESTORE,'Trước lần khôi phục'],[SAVE+'_rescue','Bản bị lỗi lúc mở game']].map(([k,n])=>{try{const r=localStorage.getItem(k);if(!r)return null;const d=JSON.parse(r);return validSave(d)?{k,n,d}:null}catch(e){return null}}).filter(Boolean);
   if(!list.length){ask(`<h2>Chưa có bản tự lưu</h2><p>Game tự lưu mỗi cuối ngày. Nếu có mã sao lưu, dùng Khôi phục từ mã.</p>`,[['Đóng',showSettings],['Khôi phục từ mã',()=>restoreDlg(),1]]);return}
-  ask(`<h2>Khôi phục bản tự lưu</h2><p>Chọn bản muốn lấy lại. Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,[['Huỷ',showSettings],...list.map(x=>[`${x.n}: ${esc(x.d.shopName||'Tiệm Trà Nhỏ')} · Ngày ${x.d.day} · ${fmt(x.d.money||0)}`,()=>applyRestore(x.d),1])])}
+  ask(`<h2>Khôi phục bản tự lưu</h2><p>Chọn bản muốn lấy lại. Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,[['Huỷ',showSettings],...list.map(x=>[`${x.n}: ${esc(x.d.shopName||'Tiệm trà nhỏ của Luy Luy')} · Ngày ${x.d.day} · ${fmt(x.d.money||0)}`,()=>applyRestore(x.d),1])])}
 function restoreStorageError(){R.noStore=true;ask('<h2>Không thể lưu bản khôi phục</h2><p>Tiến trình hiện tại vẫn đang mở trong phiên này. Hãy xuất bản sao lưu trước khi tắt game hoặc thử khôi phục lại.</p>',[['Để sau',()=>{}],['Tạo mã sao lưu',backupDlg,1]])}
 function applyRestore(d){let next,current,oldBak;try{next=buildSave(d);current=pack();oldBak=localStorage.getItem(PRE_RESTORE)}catch(e){restoreStorageError();return false}
   try{localStorage.setItem(PRE_RESTORE,current)}catch(e){restoreStorageError();return false}
@@ -1065,7 +1065,7 @@ function addReview(st,why,online,c,extra){const sr=c&&c.star!=null;if(sr)st=5;co
 
 /* ---------- HEADER ---------- */
 const esc=t=>String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const shopName=()=>S.shopName||'Tiệm Trà Nhỏ';
+const shopName=()=>S.shopName||'Tiệm trà nhỏ của Luy Luy';
 function setName(v){v=String(v||'').replace(/\s+/g,' ').trim().slice(0,30);S.shopName=v;document.title=shopName();save()}
 function renameDlg(){
   ask(`<h2>Đặt tên quán</h2><p>Tối đa 30 ký tự. Tên sẽ hiện trên biển hiệu, đánh giá và tổng kết.</p><input id="nameIn" class="pinbox nm" maxlength="30" value="${esc(S.shopName)}" placeholder="Ví dụ: Trà Sữa Nhà Mèo" aria-label="Tên quán">`,
@@ -1250,7 +1250,7 @@ function paneUpg(){
 let _tmc=null;function txtW(t,fs){/* chừa 12% cho khoảng cách chữ và chênh lệch phông */try{_tmc=_tmc||document.createElement('canvas').getContext('2d');_tmc.font=`800 ${fs}px "Baloo 2",system-ui,sans-serif`;return _tmc.measureText(t).width*1.12+t.length*.2}catch(e){return t.length*fs*.62}}
 function temHTML(brand,px,full){if(!brand||!brand.i)return '';
   const bg=brand.bg||BRAND_BGS[0].c,tc=(BRAND_BGS.find(x=>x.c===bg)||BRAND_BGS[0]).t,fr=brand.frame||'round',rd=fr==='round',nl=brand.nl||'line';
-  const nm=String(shopName()||'Tiệm Trà Nhỏ'),bw=Math.max(1.5,px*.025),ss=Math.max(6,Math.round(px*.072));
+  const nm=String(shopName()||'Tiệm trà nhỏ của Luy Luy'),bw=Math.max(1.5,px*.025),ss=Math.max(6,Math.round(px*.072));
   const inner=px-2*bw-px*.12-2,slW=inner*(rd?.8:1);let sfs=ss;if(full&&brand.slogan)while(sfs>5&&txtW(brand.slogan,sfs)*.95>slW)sfs-=.5;
   const sl=full&&brand.slogan?`<div class="tem-sl" style="font-size:${sfs.toFixed(1)}px;max-width:${Math.round(slW)}px">${esc(brand.slogan)}</div>`:'';
   const H=rd?px:px*(nl==='line'?1:1),box=`width:${px}px;${rd||nl!=='line'?`height:${H}px;`:''}background:${bg};color:${tc};--tf:${tc};border-width:${bw.toFixed(1)}px;padding:${(px*.06).toFixed(1)}px`;
@@ -2373,7 +2373,7 @@ function showSplash(had,after){
     ${stk('berry',80,1228,64,4.6,1.5)}${stk('leaf',626,1228,66,5.2,3)}
     <img class="sp4-head" src="${IMG}cathead.png" alt="">
     <span class="sp4-z" style="animation-delay:0s">z</span><span class="sp4-z" style="animation-delay:1s">z</span><span class="sp4-z" style="animation-delay:2s">z</span>
-    <h1 class="sp4-t">Tiệm Trà Nhỏ</h1>
+    <h1 class="sp4-t">Tiệm trà nhỏ <br>của Luy Luy</h1>
     <p class="sp4-tag">Pha trà, đón khách, mở tiệm nhỏ của riêng bạn</p>
     ${had?`<p class="sp4-me">${esc(shopName())} · Ngày ${S.day} · ${fmt(S.money)}</p>`:''}
     <div class="sp4-foot"><div class="sp4-msg" id="spMsg">${SP_MSG[0]}</div>
@@ -2490,8 +2490,8 @@ async function backupDlg(){$('card').onchange=null;
     <button class="big" id="bkKept" style="margin-top:12px">Tôi đã giữ bản sao lưu</button><button class="sbtn ghost" id="bkClose" style="margin-top:8px">Đóng</button>`;
   $('bkCopy').onclick=async()=>{const t=$('bkCode');let ok=false;try{await navigator.clipboard.writeText(code);ok=true}catch(e){}if(!ok){t.focus();t.select();try{ok=document.execCommand('copy')}catch(e){}}t.blur();if(ok)markBackup();toast(ok?'Đã chép mã, hãy giữ ở nơi khác':'Giữ vào ô mã để chép')};
   {let inFrame=true;try{inFrame=window.self!==window.top}catch(e){}if(inFrame)$('bkFile').hidden=true}
-  $('bkFile').onclick=async()=>{const name='tiemtranho-ngay-'+S.day+'.txt',f=new File([code],name,{type:'text/plain'});
-    try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Sao lưu Tiệm Trà Nhỏ'});markBackup();return}}catch(e){if(e&&e.name==='AbortError')return}
+  $('bkFile').onclick=async()=>{const name='tiem-tra-nho-cua-luy-luy-ngay-'+S.day+'.txt',f=new File([code],name,{type:'text/plain'});
+    try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Sao lưu Tiệm trà nhỏ của Luy Luy'});markBackup();return}}catch(e){if(e&&e.name==='AbortError')return}
     const a=document.createElement('a');a.href=URL.createObjectURL(f);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);toast('Kiểm tra file đã tải, rồi xác nhận đã giữ bản sao lưu')};
   $('bkKept').onclick=()=>{markBackup();showSettings()};$('bkClose').onclick=showSettings}
 function restoreDlg(msg){$('card').onchange=null;
@@ -2503,7 +2503,7 @@ function restoreDlg(msg){$('card').onchange=null;
   $('rsFile').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{$('rsCode').value=t.trim();toast('Đã đọc file')}).catch(()=>toast('Không đọc được file'))};
   $('rsBack').onclick=()=>{if(!$('splash').hidden)$('modal').hidden=true;else showSettings()};
   $('rsGo').onclick=async()=>{const code=$('rsCode').value;if(isField(document.activeElement))document.activeElement.blur();let d;try{d=await readBackup(code)}catch(e){restoreDlg(typeof e==='string'?e:'Mã không đọc được');return}
-    ask(`<div class="pbig">${ico('reload')}</div><h2>Khôi phục tiến trình?</h2><p>Bản sao lưu: <b>${esc(d.shopName||'Tiệm Trà Nhỏ')}</b> · Ngày ${d.day} · ${fmt(d.money)}</p><p>Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,
+    ask(`<div class="pbig">${ico('reload')}</div><h2>Khôi phục tiến trình?</h2><p>Bản sao lưu: <b>${esc(d.shopName||'Tiệm trà nhỏ của Luy Luy')}</b> · Ngày ${d.day} · ${fmt(d.money)}</p><p>Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,
       [['Huỷ',()=>restoreDlg()],['Khôi phục',()=>{closeSplash();applyRestore(d)},1]])}}
 function showSettings(){
   $('card').onchange=null;

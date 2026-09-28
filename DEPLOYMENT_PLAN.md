@@ -1,4 +1,4 @@
-# Kế hoạch phát hành công khai Tiệm Trà Nhỏ
+# Kế hoạch phát hành công khai Tiệm trà nhỏ của Luy Luy
 
 Khảo sát ngày 28/09/2026. Đây là kế hoạch phát hành; chưa triển khai công khai. Issue #1 đã chuyển game sang lưu cục bộ TTN2 và bỏ quy trình đồng bộ mã nguồn upstream. GitHub Pages workflow vẫn chạy thủ công.
 

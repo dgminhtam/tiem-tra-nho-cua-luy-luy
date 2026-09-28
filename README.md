@@ -1,4 +1,4 @@
-# Tiệm Trà Nhỏ
+# Tiệm trà nhỏ của Luy Luy
 
 Game quản lý tiệm trà sữa bằng tiếng Việt, chạy trong trình duyệt và có thể cài như ứng dụng web (PWA). Repo này là nguồn mã chính; game được phục vụ tĩnh, không có máy chủ lưu tiến trình.
 

@@ -1,7 +1,7 @@
 {
-  "name": "Tiệm Trà Nhỏ",
-  "short_name": "Tiệm Trà Nhỏ",
-  "description": "Game mở tiệm trà sữa nhỏ: nấu nguyên liệu, pha đúng món, đón khách, quản lý lãi lỗ.",
+  "name": "Tiệm trà nhỏ của Luy Luy",
+  "short_name": "Tiệm trà nhỏ của Luy Luy",
+  "description": "Tiệm trà nhỏ của Luy Luy: nấu nguyên liệu, pha đúng món, đón khách, quản lý lãi lỗ.",
   "lang": "vi",
   "start_url": "./",
   "scope": "./",
