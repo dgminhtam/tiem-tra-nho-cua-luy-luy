@@ -2,12 +2,14 @@
 
 ## Project Structure
 
-This is a static Vietnamese tea-shop game and PWA. `index.html` is the source for the UI, styles, game data, and runtime. `sw.js`, `manifest.webmanifest`, and root icons support offline use and installation. Images are in `img/`, audio in `snd/`, and font copies in `fonts.*` and `s/`. The repo is the source of game code; there is no upstream sync pipeline.
+This is a static Vietnamese tea-shop game and PWA. `index.html` is the source for the UI, styles, game data, and runtime. `sw.js`, `manifest.webmanifest`, and root icons support offline use and installation. Images are in `img/`, audio in `snd/`, and local fonts are in `s/`. The repo is the source of game code; there is no upstream sync pipeline.
 
 ## Build and Development
 
 - `py -3 -m http.server 8000` serves the app at `http://localhost:8000/`; use a local server to exercise service-worker behavior.
 - `node test_backup.js` checks TTN2 backups and restore failures.
+- `node test_prep.js` checks preparation warnings and stock tabs.
+- `node test_assets.js` checks service-worker cache paths.
 
 There is no package manager, build step, formatter, or linter.
 

@@ -36,13 +36,13 @@ Mã TTN1 cũ được đọc và kiểm tra lại theo schema hiện tại trư�
 | --- | --- |
 | `index.html` | Giao diện, CSS, dữ liệu và logic game. |
 | `sw.js`, `manifest.webmanifest`, `icon-*.png` | Chế độ offline và cài PWA. |
-| `img/`, `snd/` | Hình ảnh và âm thanh. |
-| `test_backup.js` | Kiểm tra hồi quy cho mã TTN2 và khôi phục lỗi. |
+| `img/`, `snd/`, `s/` | Hình ảnh, âm thanh và font cục bộ. |
+| `test_*.js` | Kiểm tra hồi quy cho lưu tiến trình, chuẩn bị và asset cache. |
 | `.github/workflows/static.yml` | Triển khai tĩnh qua GitHub Pages khi chạy thủ công. |
 
 ## Phát triển và phát hành
 
-Sửa trực tiếp `index.html`; repo này là nguồn mã, không còn quy trình tải hoặc biến đổi từ trang upstream. Chạy kiểm tra hồi quy bằng `node test_backup.js`. Với thay đổi gameplay hoặc lưu tiến trình, kiểm tra trong trình duyệt bằng một ngày chơi, tải lại trang, sao lưu/khôi phục và chế độ offline.
+Sửa trực tiếp `index.html`; repo này là nguồn mã, không còn quy trình tải hoặc biến đổi từ trang upstream. Chạy kiểm tra hồi quy bằng `node test_backup.js`, `node test_prep.js` và `node test_assets.js`. Với thay đổi gameplay hoặc lưu tiến trình, kiểm tra trong trình duyệt bằng một ngày chơi, tải lại trang, sao lưu/khôi phục và chế độ offline.
 
 Workflow GitHub Pages chỉ chạy khi kích hoạt thủ công. Đẩy code không tự triển khai website.
 
