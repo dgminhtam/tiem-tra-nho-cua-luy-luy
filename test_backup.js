@@ -53,7 +53,7 @@ vm.runInContext(backupCode + restoreCode, ctx);
   deniedKey = SAVE;
   assert.equal(ctx.applyRestore(later), false);
   assert.equal(JSON.parse(store.get(SAVE)).day, 2, 'quota failure must retain the primary save');
-  assert.equal(JSON.parse(store.get(PRE_RESTORE)).day, 2, 'current progress stays recoverable');
+  assert.equal(JSON.parse(store.get(PRE_RESTORE)).day, 1, 'quota failure must retain the previous pre-restore copy');
   assert.equal(ctx.S.day, 2, 'quota failure must retain the active game');
   console.log('TTN2 backup and safe restore: OK');
 })().catch(e => { console.error(e); process.exitCode = 1; });

@@ -1012,9 +1012,9 @@ function autoRestoreDlg(){$('card').onchange=null;
   if(!list.length){ask(`<h2>Chưa có bản tự lưu</h2><p>Game tự lưu mỗi cuối ngày. Nếu có mã sao lưu, dùng Khôi phục từ mã.</p>`,[['Đóng',showSettings],['Khôi phục từ mã',()=>restoreDlg(),1]]);return}
   ask(`<h2>Khôi phục bản tự lưu</h2><p>Chọn bản muốn lấy lại. Tiến trình hiện tại (ngày ${S.day}) sẽ bị thay thế.</p>`,[['Huỷ',showSettings],...list.map(x=>[`${x.n}: ${esc(x.d.shopName||'Tiệm Trà Nhỏ')} · Ngày ${x.d.day} · ${fmt(x.d.money||0)}`,()=>applyRestore(x.d),1])])}
 function restoreStorageError(){R.noStore=true;ask('<h2>Không thể lưu bản khôi phục</h2><p>Tiến trình hiện tại vẫn đang mở trong phiên này. Hãy xuất bản sao lưu trước khi tắt game hoặc thử khôi phục lại.</p>',[['Để sau',()=>{}],['Tạo mã sao lưu',backupDlg,1]])}
-function applyRestore(d){let next,current;try{next=buildSave(d);current=pack()}catch(e){toast('Bản này bị lỗi, thử bản khác');return false}
+function applyRestore(d){let next,current,oldBak;try{next=buildSave(d);current=pack();oldBak=localStorage.getItem(PRE_RESTORE)}catch(e){restoreStorageError();return false}
   try{localStorage.setItem(PRE_RESTORE,current)}catch(e){restoreStorageError();return false}
-  try{localStorage.setItem(SAVE,pack(0,next))}catch(e){restoreStorageError();return false}
+  try{localStorage.setItem(SAVE,pack(0,next))}catch(e){try{if(oldBak===null)localStorage.removeItem(PRE_RESTORE);else localStorage.setItem(PRE_RESTORE,oldBak)}catch(_){}restoreStorageError();return false}
   clearInterval(timer);clearTimeout(R.autoT);clearTimeout(R.pcT);timer=null;S=next;R={mode:'prep',tab:'kho',plan:{},today:{stars:[]}};cup=newCup();uid=0;
   document.title=shopName();renderPrep();toast('Đã khôi phục ngày '+S.day);return true}
 function giftCheck(){if(!S.gift)return;sfx('lvup');const g=S.gift;S.gift=null;if(g.k==='bung')S.bungN=0;S.money+=g.v;S.cur.gift=(S.cur.gift||0)+g.v;save();
